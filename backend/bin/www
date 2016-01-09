@@ -8,6 +8,14 @@ var app = require('../app');
 var debug = require('debug')('backend:server');
 var http = require('http');
 
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://127.0.0.1:27017/social-db'); // connect to our database
+
+mongoose.connection.on('error', function (err) {
+  console.log('db', err);
+  //mongoose.disconnect();
+});
+
 /**
  * Get port from environment and store in Express.
  */
