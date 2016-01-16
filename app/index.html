@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Social Post Location</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
+    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
+    <style type="text/css">
+    html,
+    body,
+    #map_canvas {
+        height: 100%;
+        width: 100%;
+        margin: 0px;
+    }
+    
+    #map_canvas {
+        position: relative;
+    }
+    
+    .angular-google-map-container {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+    }
+    </style>
+</head>
+</head>
+
+<body ng-app="SocialApp" ng-cloak>
+    <div ng-controller="showMap">
+        <div ng-if="!map" style="position: absolute; height: 100%; width: 100%; top: 300px; text-align: -webkit-center;">
+            <img src="/static/images/map_loader.gif">
+            <h3>Sto caricando la mappa</h3>
+        </div>
+        <div ng-if="map" id="map_canvas" style="position: absolute; height: 100%; width: 100%; top: 63px;">
+            <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
+                <ui-gmap-circle ng-repeat="c in circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius" visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable" control="c.control"></ui-gmap-circle>
+            </ui-gmap-google-map>
+        </div>
+        <md-toolbar class="md-warn">
+            <div class="md-toolbar-tools">
+                <h2 class="md-flex">Navbar</h2>
+            </div>
+        </md-toolbar>
+        <!--<md-content flex layout-padding>
+            <div layout-gt-sm="row">
+                <section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
+                    <md-button>{{title1}}</md-button>
+                    <md-button md-no-ink class="md-primary">Primary</md-button>
+                    <md-button ng-disabled="true" class="md-primary">Disabled</md-button>
+                    <md-button class="md-warn">{{title4}}</md-button>
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <label>First name</label>
+                        <input ng-model="user.firstName">
+                    </md-input-container>
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <label>Last Name</label>
+                        <input ng-model="theMax" ng-required="true">
+                    </md-input-container>
+                </section>
+            </div>
+        </md-content>-->
+    </div>
+    <!--  Jquery -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="/lib/lodash/index.js"></script>
+    <!-- Angular -->
+    <script src="/lib/angular/angular.min.js"></script>
+    <script src="/lib/angular-animate/angular-animate.min.js"></script>
+    <script src="/lib/angular-aria/angular-aria.min.js"></script>
+    <script src="/lib/angular-simple-logger/dist/angular-simple-logger.min.js"></script>
+    <!-- Angular Material -->
+    <script src="/lib/angular-material/angular-material.min.js"></script>
+    <!-- Angular Maps -->
+    <script src="/lib/angular-google-maps/dist/angular-google-maps.js"></script>
+    <script type="text/javascript">
+    var socialApp = angular.module('SocialApp', ['ngMaterial', 'uiGmapgoogle-maps']);
+
+    socialApp.config(function(uiGmapGoogleMapApiProvider) {
+        uiGmapGoogleMapApiProvider.configure({
+            v: '3.20',
+            libraries: 'weather,geometry,visualization'
+        });
+    });
+
+    socialApp.controller('showMap', function($scope, $http, $log, uiGmapIsReady) {
+        var showPosition = function(position) {
+            $scope.map = {
+                center: {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                },
+                zoom: 20
+            };
+            $log.info('map', $scope.map);
+
+        }
+
+        var getLocation = function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                $scope.map = {
+                    center: $scope.coords,
+                    zoom: 10
+                };
+            }
+        }
+
+        getLocation();
+
+        uiGmapIsReady.promise(1).then(function(instances) {
+            instances.forEach(function(inst) {
+
+                var map = inst.map;
+                var uuid = map.uiGmap_id;
+                var mapInstanceNumber = inst.instance; // Starts at 1.
+            });
+        });
+
+        $scope.options = {
+            scrollwheel: false
+        };
+
+        $scope.title1 = 'Button';
+        $scope.title4 = 'Warn';
+        $scope.isDisabled = true;
+        $scope.googleUrl = 'http://google.com';
+    });
+    </script>
+</body>
+
+</html>
