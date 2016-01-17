@@ -43,7 +43,7 @@
                         <p>Cerca i post in base alla loro posizione!</p>
                         <md-input-container class="md-block" flex-gt-sm>
                             <label>Location</label>
-                            <input ng-model="search.location">
+                            <input id="pac-input" ng-model="search.location">
                         </md-input-container>
                         <md-radio-group ng-model="search.social">
                             <md-radio-button value="photo">Instagram Photo</md-radio-button>
@@ -61,9 +61,13 @@
                 <h3>Sto caricando la mappa</h3>
             </div>
             <div ng-if="map" id="map_canvas" style="height: 900px;">
+                <!-- <script type="text/ng-template" id="searchbox.tpl.html">
+                    <input type="text" placeholder="Search Box">
+                </script> -->
                 <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
                     <ui-gmap-marker coords="marker.coords" options="marker.options" idkey="marker.id"></ui-gmap-marker>
                     <ui-gmap-circle ng-repeat="c in circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius" visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable" control="c.control"></ui-gmap-circle>
+                    <!-- <ui-gmap-search-box template="searchbox.template" events="searchbox.events"></ui-gmap-search-box> -->
                 </ui-gmap-google-map>
             </div>
         </div>
@@ -87,7 +91,7 @@
         .config(function(uiGmapGoogleMapApiProvider) {
             uiGmapGoogleMapApiProvider.configure({
                 v: '3.20',
-                libraries: 'weather,geometry,visualization'
+                libraries: 'weather,geometry,visualization,places'
             });
         })
         .config(function($mdIconProvider) {
@@ -134,24 +138,8 @@
                     longitude: position.coords.longitude
                 },
                 options: {
-                    draggable: true,
+                    draggable: false,
                     icon: '/static/images/maker.png'
-                },
-                events: {
-                    dragend: function(marker, eventName, args) {
-                        $log.log('marker dragend');
-                        var lat = marker.getPosition().lat();
-                        var lon = marker.getPosition().lng();
-                        $log.log(lat);
-                        $log.log(lon);
-
-                        $scope.marker.options = {
-                            draggable: true,
-                            labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
-                            labelAnchor: "100 0",
-                            labelClass: "marker-labels"
-                        };
-                    }
                 }
             };
 
@@ -178,6 +166,9 @@
                 visible: true,
                 control: {}
             }];
+
+            var input = document.getElementById('pac-input');
+            var searchBox = new google.maps.places.SearchBox(input);
 
             $log.info('map', $scope.map);
 
