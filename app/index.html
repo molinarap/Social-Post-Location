@@ -29,10 +29,9 @@
     }
     </style>
 </head>
-</head>
 
 <body ng-app="SocialApp" ng-cloak>
-    <div layout="row" style="height: 100%;">
+    <div layout="row" style="height: 100%;" ng-controller="instaCtrl">
         <div style="height:500px; position:relative;" ng-cloak flex="20" ng-controller="searchCtrl">
             <section layout="row" ng-cloak>
                 <md-sidenav class="md-sidenav-left" md-component-id="left" md-is-locked-open="true" flex>
@@ -42,8 +41,8 @@
                     <md-content layout-padding>
                         <p>Cerca i post in base alla loro posizione!</p>
                         <md-input-container class="md-block" flex-gt-sm>
-                            <label>Location</label>
-                            <input id="pac-input" ng-model="search.location">
+                            <!--<label>Location</label>-->
+                            <input type="text" placeholder="Location" id="pac-input" ng-model="search.location">
                         </md-input-container>
                         <md-radio-group ng-model="search.social">
                             <md-radio-button value="photo">Instagram Photo</md-radio-button>
@@ -84,8 +83,10 @@
     <script src="/lib/angular-material/angular-material.min.js"></script>
     <!-- Angular Maps -->
     <script src="/lib/angular-google-maps/dist/angular-google-maps.js"></script>
+    <!-- Satellizer -->
+    <script src="/lib/satellizer/satellizer.min.js"></script>
     <script type="text/javascript">
-    var socialApp = angular.module('SocialApp', ['ngMaterial', 'uiGmapgoogle-maps']);
+    var socialApp = angular.module('SocialApp', ['ngMaterial', 'uiGmapgoogle-maps', 'satellizer']);
 
     socialApp
         .config(function(uiGmapGoogleMapApiProvider) {
@@ -96,7 +97,37 @@
         })
         .config(function($mdIconProvider) {
             $mdIconProvider.iconSet("avatars", 'icons/avatar-icons.svg', 128);
+        })
+        .config(function($authProvider) {
+            $authProvider.oauth2({
+                name: 'instagram',
+                url: 'http://localhost:3000/auth/instagram',
+                redirectUri: 'http://socialpost.westeurope.cloudapp.azure.com/thanks',
+                clientId: '7c83df2dd8004cb683d5a861065507fd',
+                requiredUrlParams: ['scope'],
+                scope: ['likes'],
+                scopeDelimiter: '+',
+                authorizationEndpoint: 'https://api.instagram.com/oauth/authorize'
+            });
         });
+
+    socialApp.controller('instaCtrl', function($scope, $http, $log, $window, $rootScope, $auth) {
+
+        $scope.isAuthenticated = function() {
+            return $auth.isAuthenticated();
+        };
+
+        var linkInstagram = function() {
+            $auth.link('instagram')
+                .then(function(response) {
+                    $window.localStorage.currentUser = JSON.stringify(response.data.user);
+                    $rootScope.currentUser = JSON.parse($window.localStorage.currentUser);
+                });
+        };
+
+        linkInstagram();
+
+    });
 
 
     socialApp.controller('mapCtrl', function($scope, $http, $log, uiGmapIsReady, $timeout) {
