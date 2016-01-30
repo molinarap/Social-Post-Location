@@ -35,7 +35,7 @@
 </head>
 
 <body ng-app="SocialApp" ng-cloak>
-    <div layout="row" style="height: 100%;" ng-controller="instaCtrl">
+    <div layout="row" style="height: 100%;">
         <div style="height:500px; position:relative;" ng-cloak flex="20" ng-controller="searchCtrl">
             <section layout="row" ng-cloak>
                 <md-sidenav class="md-sidenav-left" md-component-id="left" md-is-locked-open="true" flex>
@@ -43,6 +43,14 @@
                         <h1 class="md-toolbar-tools">Social Post Location</h1>
                     </md-toolbar>
                     <md-content layout-padding>
+                        <div ng-controller="instaCtrl">
+                            <p ng-if="isAuthenticated() && currentUser.username">Ciao, currentUser.username</p>
+                            <p ng-if="isAuthenticated() && !currentUser.username">non hai un username</p>
+                            <div ng-if="!isAuthenticated()">
+                                <p>Non sei autenticato</p>
+                                <md-button ng-click="linkInstagram()">Login Instagram</md-button>
+                            </div>
+                        </div>
                         <p>Cerca i post in base alla loro posizione!</p>
                         <md-input-container class="md-block" flex-gt-sm>
                             <!--<label>Location</label>-->
