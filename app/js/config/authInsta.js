@@ -1,9 +1,13 @@
 socialApp
     .config(function($authProvider) {
+
+        var url = window.location.hostname;
+        console.log(url);
+
         $authProvider.oauth2({
             name: 'instagram',
-            url: 'http://localhost:3000/auth/instagram',
-            redirectUri: 'http://socialpost.westeurope.cloudapp.azure.com/thanks',
+            url: 'http://'+url+':3000/api/auth/instagram',
+            redirectUri: 'http://'+url+':3000/thanks',
             clientId: '7c83df2dd8004cb683d5a861065507fd',
             requiredUrlParams: ['scope'],
             scope: ['likes'],
@@ -11,4 +15,3 @@ socialApp
             authorizationEndpoint: 'https://api.instagram.com/oauth/authorize'
         });
     });
-
