@@ -20,6 +20,7 @@
     "lodash": "3.X",
     "mongoose": "^3.6.20",
     "morgan": "~1.6.1",
+    "request": "^2.69.0",
     "satellizer": "^0.13.4",
     "serve-favicon": "~2.3.0"
   }
