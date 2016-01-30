@@ -118,6 +118,8 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 app.use('/static', express.static(__dirname + '/public'));
 app.use('/lib', express.static(__dirname + '/node_modules'));
+app.use('/js', express.static(__dirname + '/app/js'));
+app.use('/css', express.static(__dirname + '/app/css'));
 
 app.use('/', routes);
 app.use('/users', users);

@@ -7,27 +7,31 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
     <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
-    <style type="text/css">
-    html,
-    body,
-    #map_canvas {
-        height: 100%;
-        width: 100%;
-        margin: 0px;
-    }
-    
-    #map_canvas {
-        position: relative;
-    }
-    
-    .angular-google-map-container {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        right: 0;
-        left: 0;
-    }
-    </style>
+    <!--  Jquery -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="/lib/lodash/index.js"></script>
+    <!-- Angular -->
+    <script src="/lib/angular/angular.min.js"></script>
+    <script src="/lib/angular-animate/angular-animate.min.js"></script>
+    <script src="/lib/angular-aria/angular-aria.min.js"></script>
+    <script src="/lib/angular-simple-logger/dist/angular-simple-logger.min.js"></script>
+    <!-- Angular Material -->
+    <script src="/lib/angular-material/angular-material.min.js"></script>
+    <!-- Angular Maps -->
+    <script src="/lib/angular-google-maps/dist/angular-google-maps.js"></script>
+    <!-- Satellizer -->
+    <script src="/lib/satellizer/satellizer.min.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/map.css">
+    <!-- ANGULAR MODULE -->
+    <script src="/js/index.js"></script>
+    <!-- ANGULAR CONFIG -->
+    <script src="/js/config/authInsta.js"></script>
+    <script src="/js/config/gmaps.js"></script>
+    <!-- ANGULAR CONTROLLER -->
+    <script src="/js/controller/instaCtrl.js"></script>
+    <script src="/js/controller/mapCtrl.js"></script>
+    <script src="/js/controller/searchCtrl.js"></script>
 </head>
 
 <body ng-app="SocialApp" ng-cloak>
@@ -71,194 +75,6 @@
             </div>
         </div>
     </div>
-    <!--  Jquery -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-    <script src="/lib/lodash/index.js"></script>
-    <!-- Angular -->
-    <script src="/lib/angular/angular.min.js"></script>
-    <script src="/lib/angular-animate/angular-animate.min.js"></script>
-    <script src="/lib/angular-aria/angular-aria.min.js"></script>
-    <script src="/lib/angular-simple-logger/dist/angular-simple-logger.min.js"></script>
-    <!-- Angular Material -->
-    <script src="/lib/angular-material/angular-material.min.js"></script>
-    <!-- Angular Maps -->
-    <script src="/lib/angular-google-maps/dist/angular-google-maps.js"></script>
-    <!-- Satellizer -->
-    <script src="/lib/satellizer/satellizer.min.js"></script>
-    <script type="text/javascript">
-    var socialApp = angular.module('SocialApp', ['ngMaterial', 'uiGmapgoogle-maps', 'satellizer']);
-
-    socialApp
-        .config(function(uiGmapGoogleMapApiProvider) {
-            uiGmapGoogleMapApiProvider.configure({
-                v: '3.20',
-                libraries: 'weather,geometry,visualization,places'
-            });
-        })
-        .config(function($mdIconProvider) {
-            $mdIconProvider.iconSet("avatars", 'icons/avatar-icons.svg', 128);
-        })
-        .config(function($authProvider) {
-            $authProvider.oauth2({
-                name: 'instagram',
-                url: 'http://localhost:3000/auth/instagram',
-                redirectUri: 'http://socialpost.westeurope.cloudapp.azure.com/thanks',
-                clientId: '7c83df2dd8004cb683d5a861065507fd',
-                requiredUrlParams: ['scope'],
-                scope: ['likes'],
-                scopeDelimiter: '+',
-                authorizationEndpoint: 'https://api.instagram.com/oauth/authorize'
-            });
-        });
-
-    socialApp.controller('instaCtrl', function($scope, $http, $log, $window, $rootScope, $auth) {
-
-        $scope.isAuthenticated = function() {
-            return $auth.isAuthenticated();
-        };
-
-        var linkInstagram = function() {
-            $auth.link('instagram')
-                .then(function(response) {
-                    $window.localStorage.currentUser = JSON.stringify(response.data.user);
-                    $rootScope.currentUser = JSON.parse($window.localStorage.currentUser);
-                });
-        };
-
-        linkInstagram();
-
-    });
-
-
-    socialApp.controller('mapCtrl', function($scope, $http, $log, uiGmapIsReady, $timeout) {
-
-        uiGmapIsReady.promise(1).then(function(instances) {
-            instances.forEach(function(inst) {
-
-                var map = inst.map;
-                var uuid = map.uiGmap_id;
-                var mapInstanceNumber = inst.instance; // Starts at 1.
-            });
-        });
-
-        $scope.options = {
-            scrollwheel: false
-        };
-
-        var showPosition = function(position) {
-            $scope.map = {
-                center: {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude
-                },
-                zoom: 14
-            };
-
-            /*$scope.marker = {
-                id: 0,
-                coords: $scope.map.center,
-                options: {
-                    draggable: true,
-                    icon:'/static/images/maker.png'
-                }
-            };*/
-            $scope.marker = {
-                id: 0,
-                coords: {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude
-                },
-                options: {
-                    draggable: false,
-                    icon: '/static/images/maker.png'
-                }
-            };
-
-            $scope.circles = [{
-                id: 1,
-                center: {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude
-                },
-                radius: 2000,
-                stroke: {
-                    color: '#08B21F',
-                    weight: 2,
-                    opacity: 1
-                },
-                fill: {
-                    color: '#08B21F',
-                    opacity: 0.5
-                },
-                geodesic: true,
-                draggable: true,
-                clickable: true,
-                editable: true,
-                visible: true,
-                control: {}
-            }];
-
-            var input = document.getElementById('pac-input');
-            var searchBox = new google.maps.places.SearchBox(input);
-
-            $log.info('map', $scope.map);
-
-        }
-
-        var getLocation = function() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition);
-            } else {
-                $scope.map = {
-                    center: $scope.coords,
-                    zoom: 10
-                };
-            }
-        }
-
-        getLocation();
-
-        $scope.options = {
-            scrollwheel: false
-        };
-
-        /*$scope.coordsUpdates = 0;
-        $scope.dynamicMoveCtr = 0;
-
-        $scope.$watchCollection("marker.coords", function(newVal, oldVal) {
-            if (_.isEqual(newVal, oldVal))
-                return;
-            $scope.coordsUpdates++;
-        });
-        $timeout(function() {
-            $scope.marker.coords = {
-                latitude: 42.1451,
-                longitude: -100.6680
-            };
-            $scope.dynamicMoveCtr++;
-            $timeout(function() {
-                $scope.marker.coords = {
-                    latitude: 43.1451,
-                    longitude: -102.6680
-                };
-                $scope.dynamicMoveCtr++;
-            }, 2000);
-        }, 1000);*/
-
-    });
-
-    socialApp.controller('searchCtrl', function($scope, $http, $log, uiGmapIsReady) {
-
-        $scope.search = {
-            social: 'photo',
-        };
-
-        $scope.title1 = 'Button';
-        $scope.title4 = 'Warn';
-        $scope.isDisabled = true;
-        $scope.googleUrl = 'http://google.com';
-    });
-    </script>
 </body>
 
 </html>
