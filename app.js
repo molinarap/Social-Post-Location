@@ -5,6 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var config = require('./config');
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var api = require('./routes/api');
@@ -16,17 +18,7 @@ var router = express.Router();
 var debug = require('debug')('backend:server');
 var http = require('http');
 
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://127.0.0.1:27017/social-db'); // connect to our database
-
-mongoose.connection.on('error', function(err) {
-    console.log('db', err);
-    //mongoose.disconnect();
-});
-
-mongoose.connection.close(function() {
-    console.log('Mongoose disconnected on app termination');
-});
+var config = require('./db');
 
 /**
  * Get port from environment and store in Express.
