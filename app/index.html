@@ -28,6 +28,8 @@
     <!-- ANGULAR CONFIG -->
     <script src="/js/config/authInsta.js"></script>
     <script src="/js/config/gmaps.js"></script>
+    <!-- ANGULAR SERVICE -->
+    <script src="/js/service/instaService.js"></script>
     <!-- ANGULAR CONTROLLER -->
     <script src="/js/controller/instaCtrl.js"></script>
     <script src="/js/controller/mapCtrl.js"></script>
@@ -44,11 +46,19 @@
                     </md-toolbar>
                     <md-content layout-padding>
                         <div ng-controller="instaCtrl">
-                            <p ng-if="isAuthenticated() && currentUser.username">Ciao, currentUser.username</p>
-                            <p ng-if="isAuthenticated() && !currentUser.username">non hai un username</p>
-                            <div ng-if="!isAuthenticated()">
-                                <p>Non sei autenticato</p>
-                                <md-button ng-click="linkInstagram()">Login Instagram</md-button>
+                            <div ng-if="currentUser">
+                                <p>Ciao, {{currentUser.username}}</p>
+                                <img ng-src="{{currentUser.picture}}">
+                                <div>
+                                    <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="showMyPhoto()">Mostra mie foto</md-button>
+                                </div>
+                                <div>
+                                    <md-button class="md-raised" ng-click="logout()">Logout</md-button>
+                                </div>
+                            </div>
+                            <div ng-if="!currentUser">
+                                <p>Esegui l'accesso</p>
+                                <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="linkInstagram()">Login Instagram</md-button>
                             </div>
                         </div>
                         <p>Cerca i post in base alla loro posizione!</p>

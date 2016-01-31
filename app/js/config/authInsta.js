@@ -10,7 +10,7 @@ socialApp
             redirectUri: 'http://'+url+':3000/thanks',
             clientId: '7c83df2dd8004cb683d5a861065507fd',
             requiredUrlParams: ['scope'],
-            scope: ['likes'],
+            scope: ['basic', 'comments', 'follower_list', 'likes', 'public_content', 'relationships'],
             scopeDelimiter: '+',
             authorizationEndpoint: 'https://api.instagram.com/oauth/authorize'
         });
