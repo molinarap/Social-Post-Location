@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var usersInPhoto = new Schema({
+var UsersInPhoto = new Schema({
     position: {
         x: String,
         y: String,
@@ -17,4 +17,4 @@ var usersInPhoto = new Schema({
 
 });
 
-module.exports = mongoose.model('usersInPhoto', usersInPhoto);
+module.exports = mongoose.model('UsersInPhoto', UsersInPhoto);

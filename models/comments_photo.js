@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var commentsPhoto = new Schema({
+var CommentsPhoto = new Schema({
     id: String,
     text: String,
     created_time: String,
@@ -15,4 +15,4 @@ var commentsPhoto = new Schema({
     updated_at: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('commentsPhoto', commentsPhoto);
+module.exports = mongoose.model('CommentsPhoto', CommentsPhoto);

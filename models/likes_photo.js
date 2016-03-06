@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var likesPhoto = new Schema({
+var LikesPhoto = new Schema({
 
     id: String,
     full_name: String,
@@ -12,4 +12,4 @@ var likesPhoto = new Schema({
 
 });
 
-module.exports = mongoose.model('likesPhoto', likesPhoto);
+module.exports = mongoose.model('LikesPhoto', LikesPhoto);
