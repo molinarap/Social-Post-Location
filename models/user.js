@@ -11,7 +11,9 @@ var User = new Schema({
     name: String,
     surname: String,
     picture: String,
-    accessToken: String
+    accessToken: String,
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model('User', User);
