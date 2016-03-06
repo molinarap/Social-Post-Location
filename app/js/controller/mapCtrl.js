@@ -1,4 +1,4 @@
-socialApp.controller('mapCtrl', function($scope, $http, $log, uiGmapIsReady, $timeout) {
+socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, uiGmapIsReady, $timeout, $window, instaService) {
 
     uiGmapIsReady.promise(1).then(function(instances) {
         instances.forEach(function(inst) {
@@ -8,6 +8,12 @@ socialApp.controller('mapCtrl', function($scope, $http, $log, uiGmapIsReady, $ti
             var mapInstanceNumber = inst.instance; // Starts at 1.
         });
     });
+
+    var localUser = $window.localStorage.currentUser;
+
+    if (localUser) {
+        localUser = JSON.parse($window.localStorage.currentUser);
+    }
 
     $scope.options = {
         scrollwheel: false
@@ -19,17 +25,10 @@ socialApp.controller('mapCtrl', function($scope, $http, $log, uiGmapIsReady, $ti
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude
             },
-            zoom: 14
+            zoom: 14,
+            bounds: {}
         };
 
-        /*$scope.marker = {
-            id: 0,
-            coords: $scope.map.center,
-            options: {
-                draggable: true,
-                icon:'/static/images/maker.png'
-            }
-        };*/
         $scope.marker = {
             id: 0,
             coords: {
@@ -66,8 +65,15 @@ socialApp.controller('mapCtrl', function($scope, $http, $log, uiGmapIsReady, $ti
             control: {}
         }];
 
-        var input = document.getElementById('pac-input');
-        var searchBox = new google.maps.places.SearchBox(input);
+        $scope.search = {};
+
+        var searchInput = document.getElementById('place-input');
+        var searchBox = new google.maps.places.SearchBox(searchInput);
+
+        var events = {
+            places_changed: function(searchBox) {}
+        }
+        $scope.searchbox = { template: 'searchbox.tpl.html', events: events };
 
         $log.info('map', $scope.map);
 
@@ -86,31 +92,61 @@ socialApp.controller('mapCtrl', function($scope, $http, $log, uiGmapIsReady, $ti
 
     getLocation();
 
-    $scope.options = {
-        scrollwheel: false
+    var createMarker = function(obj) {
+        var photo = {
+            user: obj.user.username,
+            profile_picture: obj.user.profile_picture,
+            date: obj.created_time,
+            img: obj.images.low_resolution.url,
+            tags: obj.tags,
+            latitude: obj.location.latitude,
+            longitude: obj.location.longitude,
+            id: obj.location.id,
+            name: obj.location.name
+        };
+
+        if (obj.caption) {
+            photo.text = obj.caption.text;
+        }
+
+        return photo;
     };
 
-    /*$scope.coordsUpdates = 0;
-    $scope.dynamicMoveCtr = 0;
+    $scope.photos = [];
+    $scope.showMyPhoto = function() {
+        instaService.getFeed(localUser.instagramId)
+            .then(function success(result) {
+                var photos = result.data;
+                $log.info('photos', photos);
+                for (var i = 0; i < photos.length; i++) {
+                    if (photos[i].location !== null) {
+                        $scope.photos.push(createMarker(photos[i]));
+                    }
+                }
+                $log.info($scope.photos);
+                $rootScope.currentUser.photos = $scope.photos;
+            }, function error(error) {
+                console.log(error);
+            });
+    };
 
-    $scope.$watchCollection("marker.coords", function(newVal, oldVal) {
-        if (_.isEqual(newVal, oldVal))
-            return;
-        $scope.coordsUpdates++;
-    });
-    $timeout(function() {
-        $scope.marker.coords = {
-            latitude: 42.1451,
-            longitude: -100.6680
-        };
-        $scope.dynamicMoveCtr++;
-        $timeout(function() {
-            $scope.marker.coords = {
-                latitude: 43.1451,
-                longitude: -102.6680
-            };
-            $scope.dynamicMoveCtr++;
-        }, 2000);
-    }, 1000);*/
+    $scope.locationPhotos = []
+    $scope.showLocationPhoto = function() {
+        var lat = 42.2631678;
+        var lng = 14.3073269;
+        var d = 5000;
+        instaService.getMediaLocation(localUser.instagramId, lat, lng, d)
+            .then(function success(result) {
+                var photos = result.data;
+                for (var i = 0; i < photos.length; i++) {
+                    $scope.locationPhotos.push(createMarker(photos[i]));
+                }
+                $log.info($scope.locationPhotos);
+            }, function error(error) {
+                console.log(error);
+            });
+    };
+
+
 
 });

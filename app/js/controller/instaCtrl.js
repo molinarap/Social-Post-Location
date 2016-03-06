@@ -28,22 +28,6 @@ socialApp.controller('instaCtrl', function($scope, $http, $log, $window, $rootSc
     };
 
 
-    $scope.showMyPhoto = function() {
-        instaService.getFeed(localUser.instagramId)
-            .then(function success(result) {
-                var photos = result.data;
-                $scope.photos = [];
-                for (var i = 0; i < photos.length - 1; i++) {
-                    if (photos[i].location !== null) {
-                        $scope.photos.push(photos[i]);
-                    }
-                }
-                $rootScope.currentUser.photos = $scope.photos;
-            }, function error(error) {
-                console.log(error);
-            });
-    };
-
     /*if ($auth.isAuthenticated() && ($rootScope.currentUser && $rootScope.currentUser.username)) {
         instaService.getFeed().success(function(data) {
             $scope.photos = data;

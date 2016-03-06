@@ -25,7 +25,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="/css/map.css">
     <!-- ANGULAR MODULE -->
-    <script src="/js/index.js"></script>
+    <script src="/js/module/index.js"></script>
     <!-- ANGULAR CONFIG -->
     <script src="/js/config/authInsta.js"></script>
     <script src="/js/config/gmaps.js"></script>
@@ -51,9 +51,6 @@
                                 <p>Ciao, {{currentUser.username}}</p>
                                 <img ng-src="{{currentUser.picture}}">
                                 <div>
-                                    <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="showMyPhoto()">Mostra mie foto</md-button>
-                                </div>
-                                <div>
                                     <md-button class="md-raised" ng-click="logout()">Logout</md-button>
                                 </div>
                             </div>
@@ -65,7 +62,7 @@
                         <p>Cerca i post in base alla loro posizione!</p>
                         <md-input-container class="md-block" flex-gt-sm>
                             <!--<label>Location</label>-->
-                            <input type="text" placeholder="Location" id="pac-input" ng-model="search.location">
+                            <input type="text" placeholder="Location" id="place-input" ng-model="search.location">
                         </md-input-container>
                         <md-radio-group ng-model="search.social">
                             <md-radio-button value="photo">Instagram Photo</md-radio-button>
@@ -83,13 +80,46 @@
                 <h3>Sto caricando la mappa</h3>
             </div>
             <div ng-if="map" id="map_canvas" style="height: 900px;">
+                <div style="position: absolute; z-index: 1;">
+                    <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="showMyPhoto()">Mostra mie foto</md-button>
+                    <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="showLocationPhoto()">Mostra foto LUOGO</md-button>
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <!--<label>Location</label>-->
+                        <input type="text" placeholder="Location" id="place-input" ng-model="search.location">
+                    </md-input-container>
+                </div>
                 <!-- <script type="text/ng-template" id="searchbox.tpl.html">
                     <input type="text" placeholder="Search Box">
                 </script> -->
                 <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
                     <ui-gmap-marker coords="marker.coords" options="marker.options" idkey="marker.id"></ui-gmap-marker>
                     <ui-gmap-circle ng-repeat="c in circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius" visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable" control="c.control"></ui-gmap-circle>
-                    <!-- <ui-gmap-search-box template="searchbox.template" events="searchbox.events"></ui-gmap-search-box> -->
+                    <ui-gmap-markers models="locationPhotos" coords="'self'" icon="'icon'">
+                        <ui-gmap-windows show="show">
+                            <div ng-non-bindable>
+                                <div layout="column">
+                                    <img style="width: 40px;" src="{{profile_picture}}" flex="20">
+                                    <p flex="80">{{user}}</p>
+                                </div>
+                                <img src="{{img}}">
+                                <p>{{name}}</p>
+                                <p>{{text}}</p>
+                            </div>
+                        </ui-gmap-windows>
+                    </ui-gmap-markers>
+                    <ui-gmap-markers models="photos" coords="'self'" icon="'icon'">
+                        <ui-gmap-windows show="show">
+                            <div ng-non-bindable>
+                                <div layout="column">
+                                    <img style="width: 40px;" src="{{profile_picture}}" flex="20">
+                                    <p flex="80">{{user}}</p>
+                                </div>
+                                <img src="{{img}}">
+                                <p>{{name}}</p>
+                                <p>{{text}}</p>
+                            </div>
+                        </ui-gmap-windows>
+                    </ui-gmap-markers>
                 </ui-gmap-google-map>
             </div>
         </div>

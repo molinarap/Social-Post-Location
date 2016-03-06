@@ -75,45 +75,41 @@ router.post('/auth/instagram', function(req, res) {
         json: true
     }, function(error, response, body) {
 
-        // Step 2a. Link user accounts.
-        if (req.headers.authorization) {
-            User.findOne({
-                instagramId: body.user.id
-            }, function(err, existingUser) {
 
-                var token = req.headers.authorization.split(' ')[1];
-                var payload = jwt.decode(token, config.tokenSecret);
+        User.findOne({
+            instagramId: body.user.id
+        }, function(err, existingUser) {
+            console.log('!existingUser', existingUser);
 
-                if (!existingUser) {
-                    console.log('!existingUser', existingUser);
-                    var user = new User({
-                        instagramId: body.user.id,
-                        username: body.user.username,
-                        fullName: body.user.full_name,
-                        name: body.user.name,
-                        surname: body.user.surname,
-                        picture: body.user.profile_picture,
-                        accessToken: body.access_token
-                    });
+            if (!existingUser) {
+                console.log('!existingUser', existingUser);
+                var user = new User({
+                    instagramId: body.user.id,
+                    username: body.user.username,
+                    fullName: body.user.full_name,
+                    name: body.user.name,
+                    surname: body.user.surname,
+                    picture: body.user.profile_picture,
+                    accessToken: body.access_token
+                });
 
-                    user.save(function() {
-                        console.log('user', user);
-                        var token = createToken(user);
-                        res.send({
-                            token: token,
-                            user: user
-                        });
-                    });
-                } else {
-                    console.log('existingUser', existingUser);
-                    var token = createToken(existingUser);
-                    return res.send({
+                user.save(function() {
+                    console.log('user', user);
+                    var token = createToken(user);
+                    res.send({
                         token: token,
-                        user: existingUser
+                        user: user
                     });
-                }
-            });
-        }
+                });
+            } else {
+                console.log('existingUser', existingUser);
+                var token = createToken(existingUser);
+                return res.send({
+                    token: token,
+                    user: existingUser
+                });
+            }
+        });
     });
 });
 
@@ -125,7 +121,7 @@ router.post('/myphoto', isAuthenticated, function(req, res) {
     console.log('instagramId', instagramId);
 
     var feedUrl = 'https://api.instagram.com/v1/users/' + instagramId + '/media/recent?access_token=' + params.access_token;
-    
+
     console.log('feedUrl', feedUrl);
 
     request.get({
@@ -139,5 +135,51 @@ router.post('/myphoto', isAuthenticated, function(req, res) {
     });
 });
 
+router.post('/locationPhoto', isAuthenticated, function(req, res) {
+    var params = {
+        access_token: req.user.accessToken
+    };
+    var instagramId = req.body.instagram_id;
+    var lat = req.body.lat;
+    var lng = req.body.lng;
+    var distance = req.body.distance;
+    var locationUrl = 'https://api.instagram.com/v1/media/search?lat=' + lat + '&lng=' + lng + '&distance=' + distance + '&access_token=' + params.access_token;
+    //var locationUrl = 'https://api.instagram.com/v1/locations/' + 616736 + '/media/recent?access_token=' + params.access_token;
+
+    console.log('locationUrl', locationUrl);
+
+    request.get({
+        url: locationUrl,
+        qs: params,
+        json: true
+    }, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            res.send(body.data);
+        }
+    });
+});
+
+router.post('/queryPhoto', function(req, res) {
+    var params = {
+        client_id: '0fbcf8f88e6d45b89ae445fd961a752f'
+    };
+    var instagramId = req.body.instagram_id;
+    var lat = req.body.lat;
+    var lng = req.body.lng;
+    var distance = req.body.distance;
+    var url = 'https://api.instagram.com/v1/media/search?lat=' + lat + '&lng=' + lng + '&distance=' + distance +'?client_id='+params.client_id;
+    
+    console.log('url', url);
+
+    request.get({
+        url: url,
+        qs: params,
+        json: true
+    }, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            res.send(body.data);
+        }
+    });
+});
 
 module.exports = router;
