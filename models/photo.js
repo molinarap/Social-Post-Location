@@ -5,6 +5,11 @@ var LikesPhoto = require('../models/likes_photo');
 var UsersInPhoto = require('../models/users_in_photo');
 
 var Photo = new Schema({
+    id: {
+        type: String,
+        index: true,
+        unique: true
+    },
     caption: {
         created_time: String,
         from: {
@@ -18,14 +23,10 @@ var Photo = new Schema({
     },
     comments: {
         count: Number,
-        data: Array[CommentsPhoto],
+        data: [CommentsPhoto],
     },
     created_time: String,
     filter: String,
-    id: {
-        type: String,
-        index: true
-    },
     images: {
         low_resolution: {
             height: Number,
@@ -45,7 +46,7 @@ var Photo = new Schema({
     },
     likes: {
         count: Number,
-        data: Array[LikesPhoto]
+        data: [LikesPhoto]
     },
     link: String,
     location: {
@@ -54,7 +55,7 @@ var Photo = new Schema({
         longitude: String,
         name: String
     },
-    tags: Array[String],
+    tags: [String],
     type: String,
     user: {
         full_name: String,
@@ -62,7 +63,7 @@ var Photo = new Schema({
         profile_picture: String,
         username: String
     },
-    users_in_photo: Array[UsersInPhoto],
+    users_in_photo: [UsersInPhoto],
     geo: {
         type: [Number], // [<longitude>, <latitude>]
         index: '2d' // create the geospatial index

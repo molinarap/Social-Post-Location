@@ -16,24 +16,41 @@ socialAdmin.controller('adminCtrl', function($rootScope, $scope, $http, $log, $t
             });
     };*/
 
+    $scope.search = {};
+
     $scope.locationPhotos = []
     $scope.showLocationPhoto = function() {
         //var r = (Math.random() * 100) + 1;
-        var lat = 42.2631678;
-        var lng = 14.3073269;
-        var d = 5000;
-        dbService.getLocationPhoto(lat, lng, d)
-            .then(function success(result) {
-                var photos = result.data;
-                for (var i = 0; i < photos.length; i++) {
-                    console.log(photos[i]);
+        var coords = [{
+            "location": "Chieti",
+            "lat": 41.854333,
+            "lng": 12.468105
+        }];
 
-                    $scope.locationPhotos.push(photos[i]);
-                }
-                $log.info($scope.locationPhotos);
-            }, function error(error) {
-                console.log(error);
-            });
+        //var lat = $scope.search.latitude;
+        //var lng = $scope.search.longitude;
+        //var lat = 42.2631678;
+        //var lng = 14.3073269;
+        var d = 5000;
+        for (var j = 0; j < coords.length; j++) {
+            dbService.getLocationPhoto(coords[j].lat, coords[j].lng, d)
+                .then(function success(result) {
+                    var photos = result.data;
+                    for (var i = 0; i < photos.length; i++) {
+                        $scope.locationPhotos.push(photos[i]);
+                        dbService.savePhoto(photos[i])
+                            .then(function success(result) {
+                                console.log('foto salvata: ', result);
+                            }, function error(error) {
+                                console.log('errore nel salvataggio: ', error);
+                            });
+                    }
+                    $log.info($scope.locationPhotos);
+                }, function error(error) {
+                    console.log(error);
+                });
+        }
+
     };
 
 

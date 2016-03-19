@@ -34,7 +34,7 @@
 
 <body ng-app="SocialAdmin" layout="column" style="height:500px;" ng-cloak>
     <section layout="row" flex>
-        <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')">
+        <md-sidenav class="md-sidenav-left md-whiteframe-z2" md-component-id="left" md-is-locked-open="true">
             <md-toolbar class="md-theme-indigo">
                 <h1 class="md-toolbar-tools">Sidenav Left</h1>
             </md-toolbar>
@@ -48,15 +48,35 @@
             </md-content>
         </md-sidenav>
         <md-content flex layout-padding>
-            <div layout="column" layout-fill layout-align="top center" ng-controller="adminCtrl">
+            <div layout="column" layout-fill layout-align="top" ng-controller="adminCtrl">
                 <p>
-                    qualcosa qui ci sta
+                    Inserisci le coordinate:
                 </p>
                 <div>
-                    <md-button class="md-primary" ng-click="showLocationPhoto()">
-                        se lo clicco succede qualcosa
-                    </md-button>
+                    <form name="userForm">
+                        <div layout-gt-xs="row">
+                            <md-input-container class="md-block" flex-gt-xs>
+                                <label>Latitude</label>
+                                <input ng-model="search.latitude">
+                            </md-input-container>
+                            <md-input-container class="md-block" flex-gt-xs>
+                                <label>Longitude</label>
+                                <input ng-model="search.longitude">
+                            </md-input-container>
+                        </div>
+                        <md-button class="md-primary" ng-click="showLocationPhoto()">
+                            se lo clicco succede qualcosa
+                        </md-button>
+                    </form>
                 </div>
+                <md-grid-list md-cols-xs="1" md-cols-sm="2" md-cols-md="4" md-cols-gt-md="6" md-row-height-gt-md="1:1" md-row-height="2:2" md-gutter="12px" md-gutter-gt-sm="8px">
+                    <md-grid-tile class="green" ng-repeat="t in locationPhotos">
+                        <img src="{{t.images.standard_resolution.url}}" style="width: 100%;">
+                        <md-grid-tile-footer>
+                            <h3><a href="https://www.instagram.com/{{t.user.username}}/" target="_blank">{{t.user.username}}</a></h3>
+                        </md-grid-tile-footer>
+                    </md-grid-tile>
+                </md-grid-list>
             </div>
             <div flex></div>
         </md-content>

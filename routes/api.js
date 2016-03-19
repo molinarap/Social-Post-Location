@@ -4,8 +4,11 @@ var request = require('request');
 var moment = require('moment');
 var jwt = require('jwt-simple');
 var router = express.Router();
-var Bear = require('../models/bear');
 var User = require('../models/user');
+var Photo = require('../models/photo');
+var CommentsPhoto = require('../models/comments_photo');
+var LikesPhoto = require('../models/likes_photo');
+var UsersInPhoto = require('../models/users_in_photo');
 
 var config = require('../config');
 
@@ -167,8 +170,8 @@ router.post('/queryPhoto', function(req, res) {
     var lat = req.body.lat;
     var lng = req.body.lng;
     var distance = req.body.distance;
-    var url = 'https://api.instagram.com/v1/media/search?lat=' + lat + '&lng=' + lng + '&distance=' + distance +'?client_id='+params.client_id;
-    
+    var url = 'https://api.instagram.com/v1/media/search?lat=' + lat + '&lng=' + lng + '&distance=' + distance + '?client_id=' + params.client_id;
+
     console.log('url', url);
 
     request.get({
@@ -182,4 +185,150 @@ router.post('/queryPhoto', function(req, res) {
     });
 });
 
+router.post('/savePhoto', function(req, res) {
+
+    var photo = req.body.photo;
+
+    //console.log('photo', photo);
+
+    Photo.findOne({
+        id: photo.id
+    }, function(err, existingPhoto) {
+        //console.log('!existingPhoto', existingPhoto);
+        if (!existingPhoto) {
+            //console.log('!existingPhoto', existingPhoto);
+
+            var comments = [];
+            var likes = [];
+            var users = [];
+            var coords = [];
+
+            if (photo.comments.count !== 0) {
+                for (var i = 0; i < photo.comments.data.length; i++) {
+                    var comments_photo = new CommentsPhoto({
+                        id: photo.comments.data[i].id,
+                        text: photo.comments.data[i].text,
+                        created_time: photo.comments.data[i].created_time,
+                        from: {
+                            full_name: photo.comments.data[i].from,
+                            id: photo.comments.data[i].from.id,
+                            profile_picture: photo.comments.data[i].from.profile_picture,
+                            username: photo.comments.data[i].from.username
+                        }
+                    });
+                    comments.push(comments_photo);
+                }
+            }
+
+            if (photo.likes.count !== 0) {
+
+                for (var i = 0; i < photo.likes.data.length; i++) {
+                    var likes_photo = new LikesPhoto({
+                        id: photo.likes.data[i].id,
+                        full_name: photo.likes.data[i].full_name,
+                        profile_picture: photo.likes.data[i].profile_picture,
+                        username: photo.likes.data[i].username
+                    });
+                    likes.push(likes_photo);
+                }
+            }
+
+
+
+            for (var i = 0; i < photo.users_in_photo.length; i++) {
+                var users_in_photo = new UsersInPhoto({
+                    position: {
+                        x: photo.users_in_photo[i].position.x,
+                        y: photo.users_in_photo[i].position.y,
+                    },
+                    user: {
+                        full_name: photo.users_in_photo[i].user.full_name,
+                        id: photo.users_in_photo[i].user.id,
+                        profile_picture: photo.users_in_photo[i].user.profile_picture,
+                        username: photo.users_in_photo[i].user.username
+                    }
+                });
+                users.push(users_in_photo);
+            }
+            coords[0] = photo.location.longitude || 0;
+            coords[1] = photo.location.latitude || 0;
+
+            var photoSave = new Photo({
+                id: photo.id || null,
+                caption: {
+                    created_time: photo.caption.created_time || null,
+                    from: {
+                        full_name: photo.caption.from.full_name || null,
+                        id: photo.caption.from.id || null,
+                        profile_picture: photo.caption.from.profile_picture || null,
+                        username: photo.caption.from.username || null
+                    },
+                    id: photo.caption.id || null,
+                    text: photo.caption.text || null
+                },
+                comments: {
+                    count: photo.comments.count || null,
+                    data: comments || []
+                },
+                created_time: photo.created_time || null,
+                filter: photo.filter || null,
+                images: {
+                    low_resolution: {
+                        height: photo.images.low_resolution.height || null,
+                        url: photo.images.low_resolution.url || null,
+                        width: photo.images.low_resolution.width || null
+                    },
+                    standard_resolution: {
+                        height: photo.images.standard_resolution.height || null,
+                        url: photo.images.standard_resolution.url || null,
+                        width: photo.images.standard_resolution.width || null
+                    },
+                    thumbnail: {
+                        height: photo.images.thumbnail.height || null,
+                        url: photo.images.thumbnail.url || null,
+                        width: photo.images.thumbnail.width || null
+                    },
+                },
+                likes: {
+                    count: photo.likes.count || null,
+                    data: likes || []
+                },
+                link: photo.link || null,
+                location: {
+                    id: photo.location.id || null,
+                    latitude: photo.location.latitude || null,
+                    longitude: photo.location.longitude || null,
+                    name: photo.location.name || null
+                },
+                tags: photo.tags || [],
+                type: photo.type || null,
+                user: {
+                    full_name: photo.user.full_name || null,
+                    id: photo.user.id || null,
+                    profile_picture: photo.user.profile_picture || null,
+                    username: photo.user.username || null
+                },
+                users_in_photo: users || null
+                    /*geo: {
+                        type: coords                
+                    }*/
+            });
+
+            photoSave.save(function(result) {
+                console.log('photoSave', photoSave);
+                res.send({
+                    photo: photoSave
+                });
+            }, function(error) {
+                console.log('ERROR', error);
+                res.send({
+                    error: error
+                });
+            });
+        } else {
+            console.log('existingPhoto', existingPhoto);
+            console.log('existingPhoto', 'photo existed in db');
+        }
+    });
+});
 module.exports = router;

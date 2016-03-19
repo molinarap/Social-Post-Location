@@ -7,6 +7,9 @@ socialAdmin
                     lng: lng,
                     distance: d
                 });
+            },
+            savePhoto: function(photo) {
+                return $http.post('http://localhost:3000/api/savePhoto', {photo});
             }
         }
     });
