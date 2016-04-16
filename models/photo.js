@@ -1,8 +1,5 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var CommentsPhoto = require('../models/comments_photo');
-var LikesPhoto = require('../models/likes_photo');
-var UsersInPhoto = require('../models/users_in_photo');
 
 var Photo = new Schema({
     id: {
@@ -20,10 +17,6 @@ var Photo = new Schema({
         },
         id: String,
         text: String
-    },
-    comments: {
-        count: Number,
-        data: [CommentsPhoto],
     },
     created_time: String,
     filter: String,
@@ -44,10 +37,6 @@ var Photo = new Schema({
             width: Number
         },
     },
-    likes: {
-        count: Number,
-        data: [LikesPhoto]
-    },
     link: String,
     location: {
         id: Number,
@@ -63,14 +52,20 @@ var Photo = new Schema({
         profile_picture: String,
         username: String
     },
-    users_in_photo: [UsersInPhoto],
+    comments: String,
+    likes: String,
     geo: {
-        type: [Number], // [<longitude>, <latitude>]
-        index: '2d' // create the geospatial index
+        type: {
+            type: String,
+            default: 'Point'
+        },
+        coordinates: [Number]
     },
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 
 });
+
+Photo.index({ geo: '2dsphere' });
 
 module.exports = mongoose.model('Photo', Photo);
