@@ -1,4 +1,4 @@
-socialApp.controller('map2Ctrl', function($rootScope, $scope, $http, $log, NgMap, $timeout, $window, instaService, db2Service) {
+socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap, $timeout, $window, instaService, db2Service) {
 
     NgMap.getMap().then(function(map) {
         console.log('map', map);
@@ -43,7 +43,7 @@ socialApp.controller('map2Ctrl', function($rootScope, $scope, $http, $log, NgMap
         console.log('coords1', $scope.coords1);
         $scope.map.setCenter($scope.place.geometry.location);
 
-    }
+    };
 
     $scope.showDetail = function(e, photo) {
         $scope.photo = photo;
@@ -52,7 +52,7 @@ socialApp.controller('map2Ctrl', function($rootScope, $scope, $http, $log, NgMap
 
     $scope.getRadius = function(num) {
         return num * 3.14;
-    }
+    };
 
     /*$scope.locationPhotos = [];
 
