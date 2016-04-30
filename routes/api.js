@@ -122,7 +122,19 @@ router.post('/download-show-photos', function(req, res) {
                     console.log('La foto è stata salvata');
                 });
             } else {
-                console.log('La foto già esiste');
+                if (photo.user.profile_picture !== existingPhoto.user.profile_picture) {
+                    Photo.update({ id: photo.id }, { $set: { 'user.picture': photo.user.profile_picture } },
+                        function(err, user) {
+                            if (err) {
+                                console.log("err", err);
+                            } else {
+                                console.log("La foto esiste: aggiornata immagine profilo");
+                            }
+                        });
+                    existingPhoto.picture = photo.user.profile_picture;
+                } else {
+                    console.log('La foto già esiste');
+                }
             }
         });
     };
@@ -157,7 +169,7 @@ router.post('/download-show-photos', function(req, res) {
                     $maxDistance: 5000,
                     $center: coords,
                 }
-            }
+            };
 
             var query = Photo.find({ geo: geo }).limit(500);
             query.exec(function(err, result) {
@@ -179,8 +191,8 @@ router.post('/download-show-photos', function(req, res) {
         }, function(reason) {
             console.log('Mi dispiace ci sta qualche problema!');
         }).then(function(results) {
-            return photosFromDb(req.body.lat, req.body.lng);
             console.log('Ora richiamo le foto dal db', results);
+            return photosFromDb(req.body.lat, req.body.lng);
         }).then(function(results1) {
             var allPhoto = results1.concat(photoInstagram);
             res.status(200).send(allPhoto);
