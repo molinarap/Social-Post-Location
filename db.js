@@ -1,14 +1,40 @@
 var mongoose = require('mongoose');
-
 var config = require('./config');
 
-mongoose.connect(config.db);
+var db = mongoose.connection;
 
-mongoose.connection.on('error', function(err) {
-    console.log('db', err);
-    mongoose.disconnect();
+var openConn = function() {
+    return new Promise(function(resolve, reject) {
+        mongoose.connect(config.db);
+        db.on('connected', function() {
+            console.log('--- OPEN CONNECTION DB ---');
+            resolve();
+        });
+        // If the connection throws an error
+        db.on('error', function(err) {
+            console.log('--- ERROR CONNECTION DB ---');
+            reject();
+        });
+    });
+}
+
+var closeConn = function() {
+    return new Promise(function(resolve, reject) {
+        db.close(function() {
+            console.log('--- CLOSE CONNECTION DB ---');
+            //process.exit(0);
+        });
+    });
+}
+
+
+// If the Node process ends, close the Mongoose connection 
+process.on('SIGINT', function() {
+    db.close(function() {
+        console.log('Mongoose default connection disconnected through app termination');
+        process.exit(0);
+    });
 });
 
-/*mongoose.connection.close(function() {
-    console.log('Mongoose disconnected on app termination');
-});*/
+exports.openConn = openConn;
+exports.closeConn = closeConn;
