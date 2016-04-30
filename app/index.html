@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
     <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
+    <!--  Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3YCwGeaSl9jaWF9paMp-HIyqzxx0sN0g&libraries=places" async defer></script>
     <!--  Jquery -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script src="/lib/lodash/index.js"></script>
@@ -18,7 +20,6 @@
     <!-- Angular Material -->
     <script src="/lib/angular-material/angular-material.min.js"></script>
     <!-- Angular Maps -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3YCwGeaSl9jaWF9paMp-HIyqzxx0sN0g&libraries=places" async defer></script>
     <script src="/lib/angular-google-maps/dist/angular-google-maps.js"></script>
     <!-- Satellizer -->
     <script src="/lib/satellizer/satellizer.min.js"></script>
@@ -26,101 +27,147 @@
     <link rel="stylesheet" href="/css/map.css">
     <!-- ANGULAR MODULE -->
     <script src="/js/module/index.js"></script>
+    <script src="/js/module/ng-map.js"></script>
     <!-- ANGULAR CONFIG -->
     <script src="/js/config/authInsta.js"></script>
     <script src="/js/config/gmaps.js"></script>
+    <script src="/js/config/theme.js"></script>
     <!-- ANGULAR SERVICE -->
     <script src="/js/service/instaService.js"></script>
+    <script src="/js/service/db2Service.js"></script>
     <!-- ANGULAR CONTROLLER -->
     <script src="/js/controller/instaCtrl.js"></script>
-    <script src="/js/controller/mapCtrl.js"></script>
+    <script src="/js/controller/map2Ctrl.js"></script>
     <script src="/js/controller/searchCtrl.js"></script>
 </head>
 
 <body ng-app="SocialApp" ng-cloak>
-    <div layout="row" style="height: 100%;">
-        <div style="height:500px; position:relative;" ng-cloak flex="20" ng-controller="searchCtrl">
-            <section layout="row" ng-cloak>
-                <md-sidenav class="md-sidenav-left" md-component-id="left" md-is-locked-open="true" flex>
-                    <md-toolbar>
-                        <h1 class="md-toolbar-tools">Social Post Location</h1>
-                    </md-toolbar>
-                    <md-content layout-padding>
-                        <div ng-controller="instaCtrl">
-                            <div ng-if="currentUser">
-                                <p>Ciao, {{currentUser.username}}</p>
-                                <img ng-src="{{currentUser.picture}}">
-                                <div>
-                                    <md-button class="md-raised" ng-click="logout()">Logout</md-button>
-                                </div>
-                            </div>
-                            <div ng-if="!currentUser">
-                                <p>Esegui l'accesso</p>
-                                <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="linkInstagram()">Login Instagram</md-button>
-                            </div>
+    <div layout="row" ng-controller="map2Ctrl" style="position: fixed; overflow-y: scroll; top: 0; right: 0; bottom: 0; left: 0;">
+        <div layout="row" layout-sm="column" layout-xs="column" flex>
+            <div layout="row" flex=25 flex-sm=100 flex-xs=100 style="z-index: 1;">
+                <md-content flex ng-controller="instaCtrl" style="border-right: 1px solid #eee;">
+                    <md-toolbar style="height: 48px; min-height: 0;">
+                        <div class="md-toolbar-tools">
+                            <h2 class="md-flex">SPLOC</h2>
                         </div>
-                        <p>Cerca i post in base alla loro posizione!</p>
-                        <md-input-container class="md-block" flex-gt-sm>
-                            <!--<label>Location</label>-->
-                            <input type="text" placeholder="Location" id="place-input" ng-model="search.location">
-                        </md-input-container>
-                        <md-radio-group ng-model="search.social">
-                            <md-radio-button value="photo">Instagram Photo</md-radio-button>
-                            <md-radio-button value="event"> Facebook Event </md-radio-button>
-                            <md-radio-button value="post">Facebook Page Post</md-radio-button>
-                        </md-radio-group>
-                        <md-button ng-disabled="!search.location" class="md-raised">CERCA</md-button>
-                    </md-content>
-                </md-sidenav>
-            </section>
-        </div>
-        <div flex="80" ng-controller="mapCtrl">
-            <div ng-if="!map" style="text-align:-webkit-center; padding:300px;">
-                <img src="/static/images/map_loader.gif">
-                <h3>Sto caricando la mappa</h3>
+                    </md-toolbar>
+                    <div ng-if="currentUser">
+                        <md-content class="md-no-momentum" style="margin-top:  30px; text-align: center;">
+                            <img ng-src="{{currentUser.picture}}" style="border-radius: 50%;">
+                            <p style="font-family: 'Roboto-Bold';"><a href="https://www.instagram.com/{{currentUser.username}}/" style="text-decoration: none;color: #000;">{{currentUser.username}}</a></p>
+                            <div style="background: #E3E3E3; width: 70%; height: 1px; margin: 25px auto;"></div>
+                        </md-content>
+                        <form ng-submit="showPhotos(coords1, true)">
+                            <md-content class="md-no-momentum" style="text-align: center;">
+                                <p style="margin: 0 0 25px 0;">Effettua una ricerca</p>
+                                <md-input-container style="margin: 0 30px;">
+                                    <label>Location</label>
+                                    <input placeholder="" places-auto-complete size=80 ng-model="location" component-restrictions="" types="{{types}}" on-place-changed="placeChanged()" />
+                                    <br/>
+                                </md-input-container>
+                                <!-- <md-input-container style="margin: 0 30px;">
+                                    <label>Tag</label>
+                                    <input placeholder="" ng-model="tag" type="text">
+                                </md-input-container> -->
+                            </md-content>
+                            <md-content class="md-no-momentum" style="text-align: center;">
+                                <md-button type="submit" class="md-raised md-primary">Search</md-button>
+                            </md-content>
+                        </form>
+                        <md-content class="md-no-momentum" style="margin-top:  20px; text-align: center;">
+                            <div style="background: #E3E3E3; width: 70%; height: 1px; margin: 25px auto;"></div>
+                            <md-button class="md-raised" ng-click="logout()">Logout</md-button>
+                        </md-content>
+                    </div>
+                    <div ng-if="!currentUser">
+                        <md-content class="md-no-momentum" style="margin-top:  20px; text-align: center;">
+                            <img src="https://maxcdn.icons8.com/Color/PNG/96/User_Interface/login_as_user-96.png" title="Login As User" width="96" style="border-radius: 50%;border: 1px solid #CDCDCD;padding: 15px;">
+                            <p>Esegui l'accesso</p>
+                            <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="linkInstagram()">Login Instagram</md-button>
+                        </md-content>
+                    </div>
+                </md-content>
             </div>
-            <div ng-if="map" id="map_canvas" style="height: 900px;">
-                <div style="position: absolute; z-index: 1;">
-                    <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="showMyPhoto()">Mostra mie foto</md-button>
-                    <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="showLocationPhoto()">Mostra foto LUOGO</md-button>
-                    <md-input-container class="md-block" flex-gt-sm>
-                        <!--<label>Location</label>-->
-                        <input type="text" placeholder="Location" id="place-input" ng-model="search.location">
-                    </md-input-container>
-                </div>
-                <!-- <script type="text/ng-template" id="searchbox.tpl.html">
-                    <input type="text" placeholder="Search Box">
-                </script> -->
-                <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
-                    <ui-gmap-marker coords="marker.coords" options="marker.options" idkey="marker.id"></ui-gmap-marker>
-                    <ui-gmap-circle ng-repeat="c in circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius" visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable" control="c.control"></ui-gmap-circle>
-                    <ui-gmap-markers models="locationPhotos" coords="'self'" icon="'icon'">
-                        <ui-gmap-windows show="show">
-                            <div ng-non-bindable>
-                                <div layout="column">
-                                    <img style="width: 40px;" src="{{profile_picture}}" flex="20">
-                                    <p flex="80">{{user}}</p>
-                                </div>
-                                <img src="{{img}}">
-                                <p>{{name}}</p>
-                                <p>{{text}}</p>
-                            </div>
-                        </ui-gmap-windows>
-                    </ui-gmap-markers>
-                    <ui-gmap-markers models="photos" coords="'self'" icon="'icon'">
-                        <ui-gmap-windows show="show">
-                            <div ng-non-bindable>
-                                <div layout="column">
-                                    <img style="width: 40px;" src="{{profile_picture}}" flex="20">
-                                    <p flex="80">{{user}}</p>
-                                </div>
-                                <img src="{{img}}">
-                                <p>{{name}}</p>
-                                <p>{{text}}</p>
-                            </div>
-                        </ui-gmap-windows>
-                    </ui-gmap-markers>
-                </ui-gmap-google-map>
+            <div ng-if="loader" flex=75 flex-sm=100 flex-xs=100 layout="column" style="position: absolute; z-index: 1; background: rgba(255, 255, 255, 0.76); height: 100%; width: 100%; padding: 30% 0;">
+                <md-progress-circular style="margin: 0 auto;" class="md-accent" md-diameter="150"></md-progress-circular>
+            </div>
+            <div flex=75 flex-sm=100 flex-xs=100 layout="column">
+                <md-content flex map-lazy-load="https://maps.google.com/maps/api/js">
+                    <md-tabs md-dynamic-height md-border-bottom>
+                        <md-tab label="Map">
+                            <ng-map zoom="18" center="current-location" geo-fallback-center="[{{coords.latitude}},{{coords.longitude}}]" style="height: 95%; display: block; position: fixed; overflow-y: scroll; top: 49px; right: 0; bottom: 0; left: 0;">
+                                <shape name="circle" no-watcher="true" stroke-color="#FF0000" stroke-opacity="0.8" stroke-weight="2" fill-color="#FF0000" fill-opacity="0.35" center="[{{coords.latitude}}, {{coords.longitude}}]" radius="{{getRadius(750)}}">
+                                </shape>
+                                <marker id='{{l.id}}' ng-repeat="l in locationPhotos2" position="[{{l.location.latitude}}, {{l.location.longitude}}]" on-click="showDetail(l)" icon="https://maxcdn.icons8.com/Color/PNG/48/Ecommerce/visit-48.png" width="48">
+                                </marker>
+                                <info-window id="photo-info">
+                                    <div ng-non-bindable>
+                                        <md-card style="box-shadow: 0 0;">
+                                            <md-card-header>
+                                                <md-card-avatar>
+                                                    <img src="{{photo.user.profile_picture}}" />
+                                                </md-card-avatar>
+                                                <md-card-header-text>
+                                                    <span class="md-title"><a href="https://www.instagram.com/{{photo.user.username}}/" target="_blank">{{photo.user.username}}</a></span>
+                                                    <span class="md-subhead">{{photo.location.name}}</span>
+                                                </md-card-header-text>
+                                            </md-card-header>
+                                            <img ng-src="{{photo.images.standard_resolution.url}}" class="md-card-image" alt="Washed Out" style="width: 260px;">
+                                            <md-card-content style="width: 228px;">
+                                                <p>
+                                                    <span style="float: left;" ng-repeat="t in photo.tags"><a href="https://www.instagram.com/explore/tags/{{t}}/" target="_blank">#{{t}}</a>, </span>
+                                                </p>
+                                            </md-card-content>
+                                        </md-card>
+                                    </div>
+                                </info-window>
+                            </ng-map>
+                        </md-tab>
+                        <md-tab label="List">
+                            <style type="text/css">
+
+                            </style>
+                            <md-content style="height: 95%; display: block; position: fixed; overflow-y: scroll; top: 49px; right: 0; bottom: 0; left: 25%; background-color: #F7F7F7;">
+                                <section ng-repeat="photo in locationPhotos2">
+                                    <!-- <md-subheader class="md-primary" style="width: 640px; text-align: center; margin: 0 auto;">{{photo.user.username}}</md-subheader> -->
+                                    <md-list style="margin-bottom: 20px;">
+                                        <md-list-item class="md-3-line">
+                                            <div layout="column">
+                                                <div style="text-align: center;">
+                                                    <img ng-src="{{photo.images.standard_resolution.url}}" class="md-card-image" style="height: 640px; width: 640px;">
+                                                </div>
+                                                <div style="width: 580px; padding: 30px; background-color: #fff;">
+                                                    <div layout="row">
+                                                        <div flex=10>
+                                                            <img ng-src="{{photo.user.profile_picture}}" style="border-radius: 50%; width: 100%;">
+                                                        </div>
+                                                        <div flex=90>
+                                                            <p style="margin: 0 20px;" class="md-headline">{{photo.user.username}}</p>
+                                                            <div layout="row" style="margin: 0 20px;">
+                                                                <div flex=4>
+                                                                    <i style="line-height: 58px;" class="fa fa-map-marker" aria-hidden="true"></i>
+                                                                </div>
+                                                                <div flex=96>
+                                                                    <h4 style="line-height: 58px; margin: 0 10px;">{{photo.location.name}}</h4>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <span style="float: left;" ng-repeat="t in photo.tags"><a href="https://www.instagram.com/explore/tags/{{t}}/" target="_blank" style="font-family: 'Roboto-Light'; color: #000; text-decoration: none; float: left; margin-left: 4px;">#{{t}}</a>, </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </md-list-item>
+                                    </md-list>
+                                </section>
+                                <md-content ng-if="locationPhotos2.length" style="text-align: center;">
+                                    <md-button md-no-ink class="md-accent" ng-click="showPhotos(coords1, false)">Mostra altre foto</md-button>
+                                </md-content>
+                            </md-content>
+                        </md-tab>
+                    </md-tabs>
+                </md-content>
             </div>
         </div>
     </div>
