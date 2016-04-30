@@ -18,7 +18,7 @@ var router = express.Router();
 var debug = require('debug')('backend:server');
 var http = require('http');
 
-var db = require('./db');
+//var db = require('./db');
 
 /**
  * Get port from environment and store in Express.

@@ -1,7 +1,8 @@
 var socialApp = angular.module('SocialApp', [
     'ngMaterial',
     'uiGmapgoogle-maps',
-    'satellizer'
+    'satellizer',
+    'ngMap'
 ]);
 
 socialApp.config(function($mdIconProvider) {

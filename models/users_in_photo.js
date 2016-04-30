@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var UsersInPhoto = new Schema({
+    id_photo: String,
     position: {
         x: String,
         y: String,

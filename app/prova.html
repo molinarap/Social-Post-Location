@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Social Post Location</title>
+    <link rel="shortcut icon" href="static/images/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
+    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
+    <!--  Jquery -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="/lib/lodash/index.js"></script>
+    <!-- Angular -->
+    <script src="/lib/angular/angular.min.js"></script>
+    <script src="/lib/angular-animate/angular-animate.min.js"></script>
+    <script src="/lib/angular-aria/angular-aria.min.js"></script>
+    <script src="/lib/angular-simple-logger/dist/angular-simple-logger.min.js"></script>
+    <!-- Angular Material -->
+    <script src="/lib/angular-material/angular-material.min.js"></script>
+    <!-- Angular Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3YCwGeaSl9jaWF9paMp-HIyqzxx0sN0g&libraries=places" async defer></script>
+    <script src="/lib/angular-google-maps/dist/angular-google-maps.js"></script>
+    <!-- Satellizer -->
+    <script src="/lib/satellizer/satellizer.min.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/map.css">
+    <!-- ANGULAR MODULE -->
+    <script src="/js/module/index.js"></script>
+    <script src="/js/module/ng-map.js"></script>
+    <!-- ANGULAR CONFIG -->
+    <script src="/js/config/authInsta.js"></script>
+    <script src="/js/config/gmaps.js"></script>
+    <!-- ANGULAR SERVICE -->
+    <script src="/js/service/instaService.js"></script>
+    <script src="/js/service/db2Service.js"></script>
+    <!-- ANGULAR CONTROLLER -->
+    <script src="/js/controller/instaCtrl.js"></script>
+    <script src="/js/controller/map2Ctrl.js"></script>
+    <script src="/js/controller/searchCtrl.js"></script>
+</head>
+
+<body ng-app="SocialApp" ng-cloak>
+    <div style="height: 100%;" ng-controller="map2Ctrl">
+        <!--<div style="height:500px; position:relative;" ng-cloak flex="20" ng-controller="searchCtrl">
+            <section layout="row" ng-cloak>
+                <md-sidenav class="md-sidenav-left" md-component-id="left" md-is-locked-open="true" flex>
+                    <md-toolbar>
+                        <h1 class="md-toolbar-tools">Social Post Location</h1>
+                    </md-toolbar>
+                    <md-content layout-padding>
+                        <div ng-controller="instaCtrl">
+                            <div ng-if="currentUser">
+                                <p>Ciao, {{currentUser.username}}</p>
+                                <img ng-src="{{currentUser.picture}}">
+                                <div>
+                                    <md-button class="md-raised" ng-click="logout()">Logout</md-button>
+                                </div>
+                            </div>
+                            <div ng-if="!currentUser">
+                                <p>Esegui l'accesso</p>
+                                <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="linkInstagram()">Login Instagram</md-button>
+                            </div>
+                        </div>
+                        <p>Cerca i post in base alla loro posizione!</p>
+                        <md-input-container class="md-block" flex-gt-sm>
+                        </md-input-container>
+                        <md-button ng-disabled="!search.location" class="md-raised">CERCA</md-button>
+                    </md-content>
+                </md-sidenav>
+            </section>
+        </div>-->
+        <!--<div flex="80" ng-controller="mapCtrl">-->
+        <div>
+            <!--<div ng-if="!map" style="text-align:-webkit-center; padding:300px;">
+                <img src="/static/images/map_loader.gif">
+                <h3>Sto caricando la mappa</h3>
+            </div>-->
+            <div ng-controller="instaCtrl">
+                <div ng-if="currentUser">
+                    <p>Ciao, {{currentUser.username}}</p>
+                    <img ng-src="{{currentUser.picture}}">
+                    <div>
+                        <md-button class="md-raised" ng-click="logout()">Logout</md-button>
+                    </div>
+                </div>
+                <div ng-if="!currentUser">
+                    <p>Esegui l'accesso</p>
+                    <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="linkInstagram()">Login Instagram</md-button>
+                </div>
+            </div>
+            <div map-lazy-load="https://maps.google.com/maps/api/js">
+                <ng-map zoom="16" center="current-location" geo-fallback-center="41.902954, 12.453349" style="height: 900px;">
+                    <div style="position: absolute; z-index: 1;">
+                        <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="showMyPhoto()">Mostra mie foto</md-button>
+                        <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="showLocationPhoto()">Mostra foto LUOGO</md-button>
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <input type="text" placeholder="Location" id="place-input" ng-model="place">
+                        </md-input-container>
+                    </div>
+                    <!--<custom-marker ng-repeat="l in locationPhotos" position="[{{l.location.latitude}}, {{l.location.longitude}}]" on-mouseover="mouseover()" on-mouseout="mouseout()" on-click="click()">
+                    </custom-marker>-->
+                    <shape name="circle" no-watcher="true" stroke-color="#FF0000" stroke-opacity="0.8" stroke-weight="2" fill-color="#FF0000" fill-opacity="0.35" center="[{{lat}},{{lng}}]" radius="{{getRadius(750)}}">
+                    </shape>
+                    <marker id='{{l.id}}' position="[{{l.location.latitude}}, {{l.location.longitude}}]" ng-repeat="l in locationPhotos" on-click="showDetail(l)">
+                    </marker>
+                    <info-window id="photo-info">
+                        <div ng-non-bindable>
+                            <div layout="column">
+                                <img style="width: 150px;" src="{{photo.user.profile_picture}}" flex="20">
+                                <p>{{photo.user.full_name}}</p>
+                            </div>
+                            <img style="width: 50%;" src="{{photo.images.standard_resolution.url}}">
+                            <div>
+                                <p style="float: left;" ng-repeat="t in photo.tags">#{{t}}<b>,</b></p>
+                            </div>
+                        </div>
+                    </info-window>
+                </ng-map>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

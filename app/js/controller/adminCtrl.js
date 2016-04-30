@@ -23,8 +23,8 @@ socialAdmin.controller('adminCtrl', function($rootScope, $scope, $http, $log, $t
         //var r = (Math.random() * 100) + 1;
         var coords = [{
             "location": "Chieti",
-            "lat": 41.854333,
-            "lng": 12.468105
+            "lat": 42.2631678,
+            "lng": 14.3073269
         }];
 
         //var lat = $scope.search.latitude;
@@ -37,10 +37,12 @@ socialAdmin.controller('adminCtrl', function($rootScope, $scope, $http, $log, $t
                 .then(function success(result) {
                     var photos = result.data;
                     for (var i = 0; i < photos.length; i++) {
-                        $scope.locationPhotos.push(photos[i]);
                         dbService.savePhoto(photos[i])
                             .then(function success(result) {
                                 console.log('foto salvata: ', result);
+                                if (result.status === 200) {
+                                    $scope.locationPhotos.push(photos[i]);
+                                }
                             }, function error(error) {
                                 console.log('errore nel salvataggio: ', error);
                             });

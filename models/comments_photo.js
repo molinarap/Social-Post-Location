@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var CommentsPhoto = new Schema({
+    id_photo: String,
     id: String,
     text: String,
     created_time: String,

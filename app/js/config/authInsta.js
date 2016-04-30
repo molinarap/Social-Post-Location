@@ -6,7 +6,7 @@ socialApp
 
         $authProvider.oauth2({
             name: 'instagram',
-            url: 'http://'+url+':3000/api/auth/instagram',
+            url: 'http://'+url+':3000/users/auth/instagram',
             redirectUri: 'http://'+url+':3000/thanks',
             clientId: '7c83df2dd8004cb683d5a861065507fd',
             requiredUrlParams: ['scope'],
