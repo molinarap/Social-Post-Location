@@ -56,7 +56,7 @@
                             <p style="font-family: 'Roboto-Bold';"><a href="https://www.instagram.com/{{currentUser.username}}/" style="text-decoration: none;color: #000;">{{currentUser.username}}</a></p>
                             <div style="background: #E3E3E3; width: 70%; height: 1px; margin: 25px auto;"></div>
                         </md-content>
-                        <form ng-submit="showPhotos(coords1, true)">
+                        <form ng-submit="searchPhotos(coords1, true)">
                             <md-content class="md-no-momentum" style="text-align: center;">
                                 <p style="margin: 0 0 25px 0;">Effettua una ricerca</p>
                                 <md-input-container style="margin: 0 30px;">
@@ -161,7 +161,7 @@
                                     </md-list>
                                 </section>
                                 <md-content ng-if="locationPhotos2.length" style="text-align: center;">
-                                    <md-button md-no-ink class="md-accent" ng-click="showPhotos(coords1, false)">Mostra altre foto</md-button>
+                                    <md-button md-no-ink class="md-accent" ng-click="searchPhotos(coords1, false)">Mostra altre foto</md-button>
                                 </md-content>
                             </md-content>
                         </md-tab>

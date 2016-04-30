@@ -110,7 +110,7 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap,
     };*/
     $scope.locationPhotos2 = [];
 
-    $scope.showPhotos = function(coords1, reset) {
+    $scope.searchPhotos = function(coords1, reset) {
 
         $scope.loader = true;
 
@@ -124,7 +124,7 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap,
             lng = coords1.longitude;
         }
 
-        searchService.showPhoto(lat, lng)
+        searchService.searchPhoto(lat, lng)
             .then(function success(result) {
                 var photos = result.data;
                 if (reset) {
