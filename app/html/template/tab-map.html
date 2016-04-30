@@ -1,0 +1,29 @@
+<md-tab label="Map">
+    <ng-map zoom="18" center="current-location" geo-fallback-center="[{{coords.latitude}},{{coords.longitude}}]" style="height: 95%; display: block; position: fixed; overflow-y: scroll; top: 49px; right: 0; bottom: 0; left: 0;">
+        <shape name="circle" no-watcher="true" stroke-color="#FF0000" stroke-opacity="0.8" stroke-weight="2" fill-color="#FF0000" fill-opacity="0.35" center="[{{coords.latitude}}, {{coords.longitude}}]" radius="{{getRadius(750)}}">
+        </shape>
+        <marker id='{{l.id}}' ng-repeat="l in locationPhotos2" position="[{{l.location.latitude}}, {{l.location.longitude}}]" on-click="showDetail(l)" icon="https://maxcdn.icons8.com/Color/PNG/48/Ecommerce/visit-48.png" width="48">
+        </marker>
+        <info-window id="photo-info">
+            <div ng-non-bindable>
+                <md-card style="box-shadow: 0 0;">
+                    <md-card-header>
+                        <md-card-avatar>
+                            <img src="{{photo.user.profile_picture}}" />
+                        </md-card-avatar>
+                        <md-card-header-text>
+                            <span class="md-title"><a href="https://www.instagram.com/{{photo.user.username}}/" target="_blank">{{photo.user.username}}</a></span>
+                            <span class="md-subhead">{{photo.location.name}}</span>
+                        </md-card-header-text>
+                    </md-card-header>
+                    <img ng-src="{{photo.images.standard_resolution.url}}" class="md-card-image" alt="Washed Out" style="width: 260px;">
+                    <md-card-content style="width: 228px;">
+                        <p>
+                            <span style="float: left;" ng-repeat="t in photo.tags"><a href="https://www.instagram.com/explore/tags/{{t}}/" target="_blank">#{{t}}</a>, </span>
+                        </p>
+                    </md-card-content>
+                </md-card>
+            </div>
+        </info-window>
+    </ng-map>
+</md-tab>

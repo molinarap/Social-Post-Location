@@ -1,0 +1,40 @@
+<md-tab label="List">
+    <md-content style="height: 95%; display: block; position: fixed; overflow-y: scroll; top: 49px; right: 0; bottom: 0; left: 25%; background-color: #F7F7F7;">
+        <section ng-repeat="photo in locationPhotos2">
+            <!-- <md-subheader class="md-primary" style="width: 640px; text-align: center; margin: 0 auto;">{{photo.user.username}}</md-subheader> -->
+            <md-list style="margin-bottom: 20px;">
+                <md-list-item class="md-3-line">
+                    <div layout="column">
+                        <div style="text-align: center;">
+                            <img ng-src="{{photo.images.standard_resolution.url}}" class="md-card-image" style="height: 640px; width: 640px;">
+                        </div>
+                        <div style="width: 580px; padding: 30px; background-color: #fff;">
+                            <div layout="row">
+                                <div flex=10>
+                                    <img ng-src="{{photo.user.profile_picture}}" style="border-radius: 50%; width: 100%;">
+                                </div>
+                                <div flex=90>
+                                    <p style="margin: 0 20px;" class="md-headline">{{photo.user.username}}</p>
+                                    <div layout="row" style="margin: 0 20px;">
+                                        <div flex=4>
+                                            <i style="line-height: 58px;" class="fa fa-map-marker" aria-hidden="true"></i>
+                                        </div>
+                                        <div flex=96>
+                                            <h4 style="line-height: 58px; margin: 0 10px;">{{photo.location.name}}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <span style="float: left;" ng-repeat="t in photo.tags"><a href="https://www.instagram.com/explore/tags/{{t}}/" target="_blank" style="font-family: 'Roboto-Light'; color: #000; text-decoration: none; float: left; margin-left: 4px;">#{{t}}</a>, </span>
+                            </div>
+                        </div>
+                    </div>
+                </md-list-item>
+            </md-list>
+        </section>
+        <md-content ng-if="locationPhotos2.length" style="text-align: center;">
+            <md-button md-no-ink class="md-accent" ng-click="searchPhotos(coords1, false)">Mostra altre foto</md-button>
+        </md-content>
+    </md-content>
+</md-tab>
