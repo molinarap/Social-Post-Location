@@ -1,6 +1,5 @@
 var socialApp = angular.module('SocialApp', [
     'ngMaterial',
-    'uiGmapgoogle-maps',
     'satellizer',
     'ngMap'
 ]);
