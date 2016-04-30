@@ -45,7 +45,7 @@ var isAuthenticated = function(req, res, next) {
 
         req.user = user;
         next();
-    })
+    });
 };
 
 /* GET users listing. */

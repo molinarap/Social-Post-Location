@@ -20,7 +20,7 @@ router.post('/download-show-photos', function(req, res) {
     var photosFromInsta = function(lat, lng) {
         return new Promise(function(resolve, reject) {
             var params = {
-                client_id: '0fbcf8f88e6d45b89ae445fd961a752f'
+                client_id: config.client_id_oldAPI
             };
             var distance = 5000;
             var url = 'https://api.instagram.com/v1/media/search?lat=' + lat + '&lng=' + lng + '&distance=' + distance + '?client_id=' + params.client_id;

@@ -141,7 +141,7 @@ router.post('/retrievePhoto', function(req, res) {
             },
             $maxDistance: 5000
         }
-    }
+    };
 
     console.log(geo);
 
