@@ -1,4 +1,4 @@
-socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, uiGmapIsReady, $timeout, $window, instaService) {
+socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, uiGmapIsReady, $timeout, $window, instaService, db2Service) {
 
     uiGmapIsReady.promise(1).then(function(instances) {
         instances.forEach(function(inst) {
@@ -94,19 +94,21 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, uiGmap
 
     var createMarker = function(obj) {
         var photo = {
-            user: obj.user.username,
-            profile_picture: obj.user.profile_picture,
-            date: obj.created_time,
-            img: obj.images.low_resolution.url,
-            tags: obj.tags,
-            latitude: obj.location.latitude,
-            longitude: obj.location.longitude,
-            id: obj.location.id,
-            name: obj.location.name
+            user: obj.user.username || '',
+            profile_picture: obj.user.profile_picture || '',
+            date: obj.created_time || '',
+            img: obj.images.low_resolution.url || '',
+            tags: obj.tags || '',
+            latitude: obj.location.latitude || '',
+            longitude: obj.location.longitude || '',
+            id: obj.location.id || '',
+            name: obj.location.name || ''
         };
 
         if (obj.caption) {
             photo.text = obj.caption.text;
+        }else{
+            photo.text = "nessun testo inserito";
         }
 
         return photo;
@@ -130,7 +132,7 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, uiGmap
             });
     };
 
-    $scope.locationPhotos = []
+    /*$scope.locationPhotos = []
     $scope.showLocationPhoto = function() {
         var lat = 42.2631678;
         var lng = 14.3073269;
@@ -145,8 +147,26 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, uiGmap
             }, function error(error) {
                 console.log(error);
             });
+    };*/
+
+
+    $scope.locationPhotos = []
+    $scope.showLocationPhoto = function() {
+        $scope.locationPhotos = []
+
+        var lat = 41.902954;
+        var lng = 12.453349;
+        var d = 5000;
+        db2Service.getLocationPhoto(lat, lng, d)
+            .then(function success(result) {
+                var photos = result.data;
+                for (var i = 0; i < photos.length; i++) {
+                    $scope.locationPhotos.push(createMarker(photos[i]));
+                }
+                $log.info($scope.locationPhotos);
+            }, function error(error) {
+                console.log(error);
+            });
     };
-
-
 
 });
