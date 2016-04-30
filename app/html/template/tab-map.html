@@ -1,5 +1,9 @@
-<md-tab label="Map">
-    <ng-map zoom="18" center="current-location" geo-fallback-center="[{{coords.latitude}},{{coords.longitude}}]" style="height: 95%; display: block; position: fixed; overflow-y: scroll; top: 49px; right: 0; bottom: 0; left: 0;">
+<md-tab label="Show Map">
+<!--     <md-tab-label>
+        <i style="font-size: 30px;" class="fa fa-map"></i>
+        <span style="font-size: 16px;">Show Map</span>
+    </md-tab-label> -->
+    <ng-map zoom="14" center="current-location" geo-fallback-center="[{{coords.latitude}},{{coords.longitude}}]" style="height: 91%; display: block; position: fixed; overflow-y: scroll; top: 80px; right: 0; bottom: 0; left: 0;">
         <shape name="circle" no-watcher="true" stroke-color="#FF0000" stroke-opacity="0.8" stroke-weight="2" fill-color="#FF0000" fill-opacity="0.35" center="[{{coords.latitude}}, {{coords.longitude}}]" radius="{{getRadius(750)}}">
         </shape>
         <marker id='{{l.id}}' ng-repeat="l in locationPhotos2" position="[{{l.location.latitude}}, {{l.location.longitude}}]" on-click="showDetail(l)" icon="https://maxcdn.icons8.com/Color/PNG/48/Ecommerce/visit-48.png" width="48">

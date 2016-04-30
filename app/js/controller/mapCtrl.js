@@ -9,6 +9,7 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap,
     });
 
     $scope.loader = false;
+    $scope.showSearch = true;
 
     var showPosition = function(position) {
         $scope.coords = {
@@ -52,6 +53,12 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap,
 
     $scope.getRadius = function(num) {
         return num * 3.14;
+    };
+
+    $scope.changeIcon = function() {
+        if ($scope.locationPhotos2.length) {
+            $scope.showSearch = !$scope.showSearch;
+        }
     };
 
     /*$scope.locationPhotos = [];
@@ -135,13 +142,17 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap,
                     photos[i].location.latitude = photos[i].location.latitude + (Math.random() / 1000);
                     photos[i].location.longitude = parseFloat(photos[i].location.longitude);
                     photos[i].location.longitude = photos[i].location.longitude + (Math.random() / 1000);
-                        $scope.locationPhotos2.push(photos[i]);
+                    $scope.locationPhotos2.push(photos[i]);
                 }
                 $log.info('$scope.locationPhotos', $scope.locationPhotos);
                 $scope.loader = false;
+                $scope.showSearch = false;
+
             }, function error(error) {
                 $log.info('showRetrievePhotoError', error);
                 $scope.loader = false;
+                $scope.showSearch = false;
+
 
             });
 
