@@ -1,5 +1,5 @@
 socialAdmin
-    .factory('dbService', function($http) {
+    .factory('userService', function($http) {
         return {
             getLocationPhoto: function(lat, lng, d) {
                 return $http.post('http://localhost:3000/api/queryPhoto', {
@@ -11,5 +11,5 @@ socialAdmin
             savePhoto: function(photo) {
                 return $http.post('http://localhost:3000/api/savePhoto', {photo});
             }
-        }
+        };
     });

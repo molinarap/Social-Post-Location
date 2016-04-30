@@ -1,5 +1,5 @@
 socialApp
-    .factory('db2Service', function($http) {
+    .factory('searchService', function($http) {
         return {
             getLocationPhoto: function(lat, lng, d) {
                 return $http.post('http://localhost:3000/api/queryPhoto', {

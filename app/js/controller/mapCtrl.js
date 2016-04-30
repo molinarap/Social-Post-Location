@@ -1,4 +1,4 @@
-socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap, $timeout, $window, instaService, db2Service) {
+socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap, $timeout, $window, instaService, searchService) {
 
     NgMap.getMap().then(function(map) {
         console.log('map', map);
@@ -68,11 +68,11 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap,
         var lng = $scope.lng = 15.005522;
 
         var d = 5000;
-        db2Service.getLocationPhoto(lat, lng, d)
+        searchService.getLocationPhoto(lat, lng, d)
             .then(function success(result) {
                 var photos = $scope.locationPhotos = result.data;
                 for (var i = 0; i < photos.length; i++) {
-                    db2Service.savePhoto(photos[i])
+                    searchService.savePhoto(photos[i])
                         .then(function success(result) {
                             console.log('foto salvata: ', result);
                         }, function error(error) {
@@ -93,7 +93,7 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap,
         var lat = $scope.lat = 40.419994;
         var lng = $scope.lng = 15.005522;
 
-        db2Service.retrievePhoto(lat, lng)
+        searchService.retrievePhoto(lat, lng)
             .then(function success(result) {
                 var photos = result.data;
                 for (var i = 0; i < photos.length; i++) {
@@ -124,7 +124,7 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap,
             lng = coords1.longitude;
         }
 
-        db2Service.showPhoto(lat, lng)
+        searchService.showPhoto(lat, lng)
             .then(function success(result) {
                 var photos = result.data;
                 if (reset) {

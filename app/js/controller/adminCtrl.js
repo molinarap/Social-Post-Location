@@ -1,8 +1,8 @@
-socialAdmin.controller('adminCtrl', function($rootScope, $scope, $http, $log, $timeout, $window, dbService) {
+socialAdmin.controller('adminCtrl', function($rootScope, $scope, $http, $log, $timeout, $window, userService) {
 
     /*$scope.photos = [];
     $scope.showMyPhoto = function() {
-        dbService.getFeed(localUser.instagramId)
+        userService.getFeed(localUser.instagramId)
             .then(function success(result) {
                 var photos = result.data;
                 $log.info('photos', photos);
@@ -33,11 +33,11 @@ socialAdmin.controller('adminCtrl', function($rootScope, $scope, $http, $log, $t
         //var lng = 14.3073269;
         var d = 5000;
         for (var j = 0; j < coords.length; j++) {
-            dbService.getLocationPhoto(coords[j].lat, coords[j].lng, d)
+            userService.getLocationPhoto(coords[j].lat, coords[j].lng, d)
                 .then(function success(result) {
                     var photos = result.data;
                     for (var i = 0; i < photos.length; i++) {
-                        dbService.savePhoto(photos[i])
+                        userService.savePhoto(photos[i])
                             .then(function success(result) {
                                 console.log('foto salvata: ', result);
                                 if (result.status === 200) {
