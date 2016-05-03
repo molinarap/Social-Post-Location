@@ -1,17 +1,16 @@
-<md-content ng-if="!locationPhotos2.length || showSearch">
-    <form ng-submit="searchPhotos(coords1, true)" layout="row">
-        <md-content class="md-no-momentum" flex="60">
-            <md-input-container style="margin: 30px 30px;">
-                <label>Location</label>
-                <input placeholder="" places-auto-complete size=80 ng-model="location" component-restrictions="" types="{{types}}" on-place-changed="placeChanged()" />
-                <br/>
-            </md-input-container>
-            <!-- <md-input-container style="margin: 0 30px;">
-                                    <label>Tag</label>
-                                    <input placeholder="" ng-model="tag" type="text">
-                                </md-input-container> -->
-        </md-content>
-        <md-content class="md-no-momentum" flex=40>
-            <md-button type="submit" class="md-raised md-accent" style="margin: 26px 0;">Search</md-button>
-        </md-content>
-    </form>
+<form layout="row">
+    <md-content class="md-no-momentum" flex="60">
+        <md-input-container style="margin: 30px 30px;">
+            <label>Location</label>
+            <input placeholder="" places-auto-complete size=80 ng-model="location" component-restrictions="" types="{{types}}" on-place-changed="placeChanged(false)" />
+            <br/>
+        </md-input-container>
+        <!--<md-input-container style="margin: 0 30px;">
+                <label>Tag</label>
+                <input placeholder="" ng-model="tag" type="text">
+            </md-input-container>-->
+    </md-content>
+    <!--<md-content class="md-no-momentum" flex=40>
+        <md-button type="submit" class="md-raised md-accent" style="margin: 26px 0;">Search</md-button>
+    </md-content> -->
+</form>

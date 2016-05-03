@@ -11,6 +11,8 @@ router.post('/download-show-photos', function(req, res) {
 
     var lat = req.body.lat;
     var lng = req.body.lng;
+    var page = req.body.pg;
+    var distance = req.body.dist;
 
     var photoInstagram = [];
 
@@ -159,19 +161,23 @@ router.post('/download-show-photos', function(req, res) {
     // e interroga il db per farsi tornare tutte le foto in un range di 5 km
     var photosFromDb = function(lat, lng) {
         return new Promise(function(resolve, reject) {
+
             var coords = [lat, lng];
+            var p = page * 300;
+            var d = distance * 1000;
+
             var geo = {
                 $nearSphere: {
                     $geometry: {
                         type: "Point",
                         coordinates: coords
                     },
-                    $maxDistance: 5000,
+                    $maxDistance: d,
                     $center: coords,
                 }
             };
 
-            var query = Photo.find({ geo: geo }).limit(500);
+            var query = Photo.find({ geo: geo }).skip(p).limit(300).sort('created_time');
             query.exec(function(err, result) {
                 if (err) {
                     reject(err);
@@ -180,6 +186,17 @@ router.post('/download-show-photos', function(req, res) {
                 resolve(result);
             });
         });
+    };
+
+    var contains = function(objId, list) {
+        var i;
+        for (i = 0; i < list.length; i++) {
+            if (list[i].id === objId) {
+                return true;
+            }
+        }
+
+        return false;
     };
 
     Promise
@@ -194,9 +211,14 @@ router.post('/download-show-photos', function(req, res) {
             console.log('Ora richiamo le foto dal db', results);
             return photosFromDb(req.body.lat, req.body.lng);
         }).then(function(results1) {
-            var allPhoto = results1.concat(photoInstagram);
-            res.status(200).send(allPhoto);
-            console.log('Foto scaricate', allPhoto.length);
+            //var allPhoto = results1.concat(photoInstagram);
+            for (var i = 0; i < results1.length; i++) {
+                if (!contains(results1[i].id, photoInstagram)) {
+                    photoInstagram.push(results1[i]);
+                }
+            }
+            res.status(200).send(photoInstagram);
+            console.log('Foto scaricate', photoInstagram.length);
             db.closeConn();
         }, function(error) {
             console.log('error', error);

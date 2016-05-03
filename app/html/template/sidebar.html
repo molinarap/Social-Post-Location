@@ -31,4 +31,21 @@
             <md-button class="md-raised md-primary md-button md-ink-ripple" ng-click="linkInstagram()">Login Instagram</md-button>
         </md-content>
     </div>
+    <div style="margin-top:  20px; text-align: center;">
+        <md-content class="md-no-momentum">
+            <p>Foto: {{locationPhotos.length}}</p>
+        </md-content>
+        <md-content class="md-no-momentum">
+            <md-radio-group ng-model="distance">
+                <md-radio-button value="1">1 km</md-radio-button>
+                <md-radio-button value="2">2 km </md-radio-button>
+                <md-radio-button value="3">3 km</md-radio-button>
+                <md-radio-button value="4">4 km</md-radio-button>
+                <md-radio-button value="5">5 km</md-radio-button>
+            </md-radio-group>
+        </md-content>
+        <md-content class="md-no-momentum">
+            <md-button type="button" ng-click="searchPhotos(coords1, true)" class="md-raised md-accent" style="margin: 26px 0;">More photos</md-button>
+        </md-content>
+    </div>
 </md-content>

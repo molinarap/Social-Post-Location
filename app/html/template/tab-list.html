@@ -3,13 +3,14 @@
         <i style="font-size: 30px;" class="fa fa-picture-o"></i>
         <span style="font-size: 16px;">Show list</span>
     </md-tab-label> -->
-    <md-content style="height: 91%; display: block; position: fixed; overflow-y: scroll; top: 80px; right: 0; bottom: 0; left: 25%; background-color: #F7F7F7;">
-        <section ng-repeat="photo in locationPhotos2">
+    <md-content style="height: 91%; display: block; position: fixed; overflow-y: scroll; top: 80px; right: 0; bottom: 0; left: 20%; background-color: #F7F7F7;">
+        <section ng-repeat="photo in locationPhotos">
             <!-- <md-subheader class="md-primary" style="width: 640px; text-align: center; margin: 0 auto;">{{photo.user.username}}</md-subheader> -->
             <md-list style="margin-bottom: 20px;">
                 <md-list-item class="md-3-line">
                     <div layout="column">
                         <div style="text-align: center;">
+                            <!--<p>{{$index}}</p>-->
                             <img ng-src="{{photo.images.standard_resolution.url}}" class="md-card-image" style="height: 640px; width: 640px;">
                         </div>
                         <div style="width: 580px; padding: 30px; background-color: #fff;">
@@ -39,8 +40,8 @@
                 </md-list-item>
             </md-list>
         </section>
-        <md-content ng-if="locationPhotos2.length" style="text-align: center;">
-            <md-button md-no-ink class="md-accent" ng-click="searchPhotos(coords1, false)">Mostra altre foto</md-button>
+        <md-content ng-if="locationPhotos.length" style="text-align: center;">
+            <md-button md-no-ink class="md-accent" ng-click="searchPhotos(coords1, true)">Mostra altre foto</md-button>
         </md-content>
     </md-content>
 </md-tab>

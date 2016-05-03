@@ -63,12 +63,12 @@
         <div layout="row" layout-sm="column" layout-xs="column" flex>
             <div layout="row" flex=20 flex-sm=100 flex-xs=100 style="z-index: 1;" ng-include="'./template/sidebar.html'">
             </div>
-            <div ng-if="loader" flex=75 flex-sm=100 flex-xs=100 layout="column" style="position: absolute; z-index: 1; background: rgba(255, 255, 255, 0.76); height: 100%; width: 100%; padding: 30% 0;">
+            <div ng-if="loader" flex=80 flex-sm=100 flex-xs=100 layout="column" style="position: absolute; z-index: 1; background: rgba(255, 255, 255, 0.76); height: 100%; width: 100%; padding: 30% 0;">
                 <md-progress-circular style="margin: 0 auto;" class="md-accent" md-diameter="150"></md-progress-circular>
             </div>
             <div flex=80 flex-sm=100 flex-xs=100 layout="column">
                 <md-content flex>
-                    <md-content ng-if="!locationPhotos2.length || showSearch">
+                    <md-content ng-if="!locationPhotos.length || showSearch">
                         <div ng-include="'./template/tab-search.html'"></div>
                     </md-content>
                     <md-content>

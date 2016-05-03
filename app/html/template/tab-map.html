@@ -1,32 +1,44 @@
 <md-tab label="Show Map">
-<!--     <md-tab-label>
+    <!--     <md-tab-label>
         <i style="font-size: 30px;" class="fa fa-map"></i>
         <span style="font-size: 16px;">Show Map</span>
     </md-tab-label> -->
     <ng-map zoom="14" center="current-location" geo-fallback-center="[{{coords.latitude}},{{coords.longitude}}]" style="height: 91%; display: block; position: fixed; overflow-y: scroll; top: 80px; right: 0; bottom: 0; left: 0;">
-        <shape name="circle" no-watcher="true" stroke-color="#FF0000" stroke-opacity="0.8" stroke-weight="2" fill-color="#FF0000" fill-opacity="0.35" center="[{{coords.latitude}}, {{coords.longitude}}]" radius="{{getRadius(750)}}">
+        <shape name="circle" stroke-color="#FF0000" stroke-opacity="0.8" stroke-weight="2" fill-color="#FF0000" fill-opacity="0.35" center="[{{coords1.latitude}}, {{coords1.longitude}}]" radius="{{getRadius(1000)}}">
         </shape>
-        <marker id='{{l.id}}' ng-repeat="l in locationPhotos2" position="[{{l.location.latitude}}, {{l.location.longitude}}]" on-click="showDetail(l)" icon="https://maxcdn.icons8.com/Color/PNG/48/Ecommerce/visit-48.png" width="48">
+        <marker id='{{l.id}}' ng-repeat="l in locationPhotos" position="[{{l.location.latitude}}, {{l.location.longitude}}]" on-click="showDetail(l)" icon="/static/images/sploc_maker.png" width="10">
         </marker>
         <info-window id="photo-info">
             <div ng-non-bindable>
-                <md-card style="box-shadow: 0 0;">
-                    <md-card-header>
-                        <md-card-avatar>
-                            <img src="{{photo.user.profile_picture}}" />
-                        </md-card-avatar>
-                        <md-card-header-text>
-                            <span class="md-title"><a href="https://www.instagram.com/{{photo.user.username}}/" target="_blank">{{photo.user.username}}</a></span>
-                            <span class="md-subhead">{{photo.location.name}}</span>
-                        </md-card-header-text>
-                    </md-card-header>
-                    <img ng-src="{{photo.images.standard_resolution.url}}" class="md-card-image" alt="Washed Out" style="width: 260px;">
-                    <md-card-content style="width: 228px;">
-                        <p>
-                            <span style="float: left;" ng-repeat="t in photo.tags"><a href="https://www.instagram.com/explore/tags/{{t}}/" target="_blank">#{{t}}</a>, </span>
-                        </p>
-                    </md-card-content>
-                </md-card>
+                <div layout="column">
+                    <div style="text-align: center;">
+                        <!--<p>{{$index}}</p>-->
+                        <img ng-src="{{photo.images.standard_resolution.url}}" class="md-card-image" style="height: 260px; width: 260px;">
+                    </div>
+                    <div style="width: 260px; padding: 10px; background-color: #fff;">
+                        <div layout="row">
+                            <div flex=10>
+                                <a href="https://www.instagram.com/{{photo.user.username}}/" target="_blank">
+                                    <img ng-src="{{photo.user.profile_picture}}" style="border-radius: 50%; width: 50px;">
+                                </a>
+                            </div>
+                            <div flex=90 style="margin: 10px 0;">
+                                <p style="margin: 0 35px;line-height: 0;" class="md-headline"><a style="font-size:14px;text-decoration: none;color: #000;" href="https://www.instagram.com/{{photo.user.username}}/" target="_blank">{{photo.user.username}}</a></p>
+                                <div layout="row" style="margin: 0 35px;">
+                                    <div flex=4>
+                                        <i style="line-height: 50px;" class="fa fa-map-marker" aria-hidden="true"></i>
+                                    </div>
+                                    <div flex=96>
+                                        <h4 style=" margin:12px 10px;">{{photo.location.name}}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin: 10px auto;">
+                            <span style="float: left;" ng-repeat="t in photo.tags"><a href="https://www.instagram.com/explore/tags/{{t}}/" target="_blank" style="font-family: 'Roboto-Light'; color: #000; text-decoration: none; float: left; margin-left: 4px;">#{{t}}</a>, </span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </info-window>
     </ng-map>
