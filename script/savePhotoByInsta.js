@@ -153,7 +153,7 @@ var photosFromDb = function(lat, lng) {
                 },
                 $maxDistance: 5000
             }
-        }
+        };
         var query = Photo.find({ geo: geo }).limit(100);
         query.exec(function(err, result) {
             if (err) {
