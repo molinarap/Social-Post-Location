@@ -215,7 +215,7 @@ router.post('/download-show-photos', function(req, res) {
             // var photos2 = value[2];
             // saveAllPhotos(photos2);
             // var photos3 = value[3];
-            saveAllPhotos(photos3);
+            //saveAllPhotos(photos3);
         }, function(reason) {
             console.log('Mi dispiace ci sta qualche problema!');
         }).then(function(results) {
