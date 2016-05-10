@@ -200,11 +200,22 @@ router.post('/download-show-photos', function(req, res) {
     };
 
     Promise
-        .all([photosFromInsta(req.body.lat, req.body.lng), db.openConn()])
+        .all([
+            photosFromInsta(req.body.lat, req.body.lng), 
+            // photosFromInsta(req.body.lat, req.body.lng), 
+            // photosFromInsta(req.body.lat, req.body.lng), 
+            // photosFromInsta(req.body.lat, req.body.lng),
+            db.openConn()])
         .then(function(value) {
             console.log('Inizio a salvare le foto nel db...');
-            var photos = value[0];
-            saveAllPhotos(photos);
+            var photos0 = value[0];
+            saveAllPhotos(photos0);
+            // var photos1 = value[1];
+            // saveAllPhotos(photos1);
+            // var photos2 = value[2];
+            // saveAllPhotos(photos2);
+            // var photos3 = value[3];
+            saveAllPhotos(photos3);
         }, function(reason) {
             console.log('Mi dispiace ci sta qualche problema!');
         }).then(function(results) {
