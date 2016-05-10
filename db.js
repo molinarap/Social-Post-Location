@@ -8,24 +8,25 @@ var openConn = function() {
         mongoose.connect(config.db);
         db.on('connected', function() {
             console.log('--- OPEN CONNECTION DB ---');
-            resolve();
+            resolve(true);
         });
         // If the connection throws an error
         db.on('error', function(err) {
             console.log('--- ERROR CONNECTION DB ---');
-            reject();
+            reject(false);
         });
     });
-}
+};
 
 var closeConn = function() {
     return new Promise(function(resolve, reject) {
         db.close(function() {
             console.log('--- CLOSE CONNECTION DB ---');
+            resolve(true);
             //process.exit(0);
         });
     });
-}
+};
 
 
 // If the Node process ends, close the Mongoose connection 
