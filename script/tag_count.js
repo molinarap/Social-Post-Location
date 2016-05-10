@@ -65,9 +65,11 @@ var getTags = function(photo) {
                             console.log('NOT existingTag');
                             var tagSave = new TagCount({
                                 name: tag,
+                                popularity: 0,
                                 photo_id: []
                             });
                             tagSave.photo_id.push(photo.id);
+                            tagSave.popular = tagSave.photo_id.length;
                             tagSave.save(function(result) {
                                 console.log('Nuovo Tag aggiunto');
                             });
@@ -76,7 +78,7 @@ var getTags = function(photo) {
                             if (!contains(photo.id, existingTag.photo_id)) {
                                 console.log('existingTag -----------------> ' + photo.id);
                                 existingTag.photo_id.push(photo.id);
-                                TagCount.update({ name: tag }, { $set: { 'photo_id': existingTag.photo_id } },
+                                TagCount.update({ name: tag }, { $set: { 'photo_id': existingTag.photo_id, 'popularity': existingTag.photo_id.length } },
                                     function(err, user) {
                                         if (err) {
                                             reject("existingTag err", err);

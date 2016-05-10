@@ -4,9 +4,9 @@ var Schema = mongoose.Schema;
 var FilterCount = new Schema({
     name: String,
     photo_id: [String],
+    popularity: Number,
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model('FilterCount', FilterCount);
-

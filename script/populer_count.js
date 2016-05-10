@@ -1,4 +1,5 @@
 var request = require('request');
+var TagCount = require('../models/tag_count');
 var FilterCount = require('../models/filter_count');
 var Photo = require('../models/photo');
 
@@ -20,18 +21,6 @@ var contains = function(objId, list) {
         }
     }
     return false;
-};
-
-var countPhotos = function(argument) {
-    return new Promise(function(resolve, reject) {
-        Photo.count({}, function(err, c) {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(c);
-            }
-        });
-    });
 };
 
 var getPhotos = function() {
@@ -63,11 +52,9 @@ var getFilter = function(photo) {
                     console.log('NOT existingFilter');
                     var filterSave = new FilterCount({
                         name: filter,
-                        popularity: 0,
                         photo_id: []
                     });
                     filterSave.photo_id.push(photo.id);
-                    filterSave.popular = filterSave.photo_id.length;
                     filterSave.save(function(result) {
                         console.log('Nuovo filter aggiunto');
                         resolve(true);
@@ -77,7 +64,7 @@ var getFilter = function(photo) {
                     if (!contains(photo.id, existingFilter.photo_id)) {
                         console.log('existingFilter -----------------> ' + photo.id);
                         existingFilter.photo_id.push(photo.id);
-                        FilterCount.update({ name: filter }, { $set: { 'photo_id': existingFilter.photo_id, 'popularity': existingFilter.photo_id.length } },
+                        FilterCount.update({ name: filter }, { $set: { 'photo_id': existingFilter.photo_id } },
                             function(err, user) {
                                 if (err) {
                                     reject("existingFilter err", err);
