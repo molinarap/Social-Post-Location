@@ -6,34 +6,17 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap,
         localUser = JSON.parse($window.localStorage.currentUser);
     }
 
-    // get position by "navigator.geolocation"
-    var showPosition = function(position) {
-        $scope.coords = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-        };
-        console.log($scope.coords);
-    };
-
-    var getLocation = function() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition);
-        } else {
-            $scope.coords = {
-                latitude: 41.902954,
-                longitude: 12.453349
-            };
+    var contains = function(objId, list) {
+        var i;
+        for (i = 0; i < list.length; i++) {
+            if (list[i].id === objId) {
+                return true;
+            }
         }
+        return false;
     };
 
-    // init ng-maps
-    NgMap.getMap().then(function(map) {
-        console.log('map', map);
-        $scope.map = map;
-        $scope.coords1 = {};
-        $scope.place = {};
-        getLocation();
-    });
+    $scope.locationPhotos = [];
 
     $scope.showDetail = function(e, photo) {
         $scope.photo = photo;
@@ -51,127 +34,79 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap,
         }
     };
 
-    // autocomplete google maps
-    $scope.placeChanged = function(more) {
-        $scope.place = this.getPlace();
-        $scope.coords1.latitude = $scope.place.geometry.location.lat();
-        $scope.coords1.longitude = $scope.place.geometry.location.lng();
-        $scope.loader = true;
-
-        var lat, lng;
-        var p = $scope.page;
-        var d = parseInt($scope.distance);
-
-        if (!$scope.coords1) {
-            lat = $scope.coords.latitude;
-            lng = $scope.coords.longitude;
-        } else {
-            lat = $scope.coords1.latitude;
-            lng = $scope.coords1.longitude;
-        }
-
-        if (more) {
-            lat = lat + (Math.random() / 100);
-            lng = lng + (Math.random() / 100);
-            console.log("new coords:" + lat + ", " + lng);
-        } else {
-            $scope.locationPhotos = [];
-            $scope.map.setCenter($scope.c);
-        }
-
-        $scope.c = { "lat": lat, "lng": lng };
-
-
-        searchService.searchPhoto(lat, lng, p, d)
-            .then(function success(result) {
-                p = $scope.page = $scope.page + 1;
-                var photos = result.data;
-                for (var i = 0; i < photos.length; i++) {
-                    // var new_latitude = parseFloat(photos[i].location.latitude);
-                    // photos[i].location.latitude = new_latitude + (Math.random() / 1000);
-                    // var new_longitude = parseFloat(photos[i].location.longitude);
-                    // photos[i].location.longitude = new_longitude + (Math.random() / 1000);
-                    if (!contains(photos[i].id, $scope.locationPhotos)) {
-                        console.log("foto nuova");
-                        $scope.locationPhotos.push(photos[i]);
-                    } else {
-                        console.log("foto già presente");
-                    }
-                }
-
-                $log.info('$scope.locationPhotos', $scope.locationPhotos);
-                $scope.loader = false;
-                $scope.showSearch = false;
-
-            }, function error(error) {
-                $log.info('showRetrievePhotoError', error);
-                $scope.loader = false;
-                $scope.showSearch = false;
-            });
+    var getLocation = function() {
+        return new Promise((resolve, reject) => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition()
+                    .then(function(position) {
+                        $scope.coords = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        resolve($scope.coords);
+                    });
+            } else {
+                $scope.coords = {
+                    lat: 41.902954,
+                    lng: 12.453349
+                };
+            }
+        });
     };
 
-
-    // torna un array di file in /storage/html/[data]/[nome]/
-    // var placeChanged = new Promise(function(resolve, reject) {
-    //     $scope.place = this.getPlace();
-    //     $scope.coords1.latitude = $scope.place.geometry.location.lat();
-    //     $scope.coords1.longitude = $scope.place.geometry.location.lng();
-    //     resolve($scope.coords1);
-    // });
-
-    // $scope.all = function(argument) {
-    //     placeChanged()
-    //         .then(function(result) {
-    //             searchPhotos(result, false);
-    //         });
-    // };
-
-
-    $scope.locationPhotos = [];
     $scope.loader = false;
-    $scope.page = 0;
     $scope.distance = "5";
 
-    var contains = function(objId, list) {
-        var i;
-        for (i = 0; i < list.length; i++) {
-            if (list[i].id === objId) {
-                return true;
-            }
-        }
-        return false;
+
+    // init ng-maps
+    NgMap.getMap().then(function(map) {
+        // console.log('map', map);
+        $scope.map = map;
+        $scope.coords = {};
+        $scope.place = {};
+        return getLocation();
+    }).then(function(result) {
+        console.log(result);
+    });
+
+    var retriveInfoPlace = function(infoMaps) {
+        return new Promise((resolve, reject) => {
+            resolve(infoMaps.getPlace());
+        });
     };
 
-    $scope.searchPhotos = function(coords1, more) {
-        $scope.loader = true;
+    var centerMap = function(place, more) {
+        return new Promise((resolve, reject) => {
+            $scope.place = place;
+            $scope.page = 0;
+            $scope.coords = {
+                lat: place.geometry.location.lat(),
+                lng: place.geometry.location.lng()
+            };
 
-        var lat, lng;
-        var p = $scope.page;
+            if (more) {
+                $scope.coords.lat = $scope.coords.lat + (Math.random() / 100);
+                $scope.coords.lng = $scope.coords.lng + (Math.random() / 100);
+            } else {
+                console.log('$scope.coords', $scope.coords);
+                $scope.locationPhotos = [];
+                $scope.map.setCenter($scope.coords);
+            }
+            resolve($scope.coords);
+        });
+    };
+
+    // autocomplete google maps
+    var downloadPhoto = function(coords) {
+        var lat = coords.lat;
+        var lng = coords.lng;
+        var pg = $scope.page;
         var d = parseInt($scope.distance);
+        var at = localUser.accessToken;
 
-        if (!coords1) {
-            lat = $scope.coords.latitude;
-            lng = $scope.coords.longitude;
-        } else {
-            lat = coords1.latitude;
-            lng = coords1.longitude;
-        }
-
-        if (more) {
-            lat = lat + (Math.random() / 10);
-            lng = lng + (Math.random() / 10);
-            console.log("new coords:" + lat + ", " + lng);
-        } else {
-            $scope.locationPhotos = [];
-            $scope.map.setCenter($scope.c);
-        }
-
-        $scope.c = { "lat": lat, "lng": lng };
-
-
-        searchService.searchPhoto(lat, lng, p, d)
+        searchService.searchPhoto(lat, lng, pg, d, at)
             .then(function success(result) {
-                p = $scope.page = $scope.page + 1;
+                pg = $scope.page = $scope.page + 1;
                 var photos = result.data;
                 for (var i = 0; i < photos.length; i++) {
                     // var new_latitude = parseFloat(photos[i].location.latitude);
@@ -195,62 +130,18 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap,
                 $scope.loader = false;
                 $scope.showSearch = false;
             });
-
     };
 
-
-    /*$scope.locationPhotos = [];
-
-    $scope.showLocationPhoto = function() {
-        $scope.locationPhotos = [];
-
-        // VATICANO
-        //var lat = $scope.lat = 41.902954;
-        //var lng = $scope.lng = 12.453349;
-
-        // PAESTUM
-        var lat = $scope.lat = 40.419994;
-        var lng = $scope.lng = 15.005522;
-
-        var d = 5000;
-        searchService.getLocationPhoto(lat, lng, d)
-            .then(function success(result) {
-                var photos = $scope.locationPhotos = result.data;
-                for (var i = 0; i < photos.length; i++) {
-                    searchService.savePhoto(photos[i])
-                        .then(function success(result) {
-                            console.log('foto salvata: ', result);
-                        }, function error(error) {
-                            console.log('errore nel salvataggio: ', error);
-                        });
-                }
-                $log.info('$scope.locationPhotos', $scope.locationPhotos);
-            }, function error(error) {
-                console.log(error);
+    $scope.pointPlace = function(more) {
+        $scope.loader = true;
+        var infoMaps = this;
+        var m = more;
+        retriveInfoPlace(infoMaps)
+            .then(function(place) {
+                return centerMap(place, more);
+            }).then(function(coords) {
+                downloadPhoto(coords);
             });
     };
 
-    $scope.locationRetrievePhoto = [];
-
-    $scope.showRetrievePhoto = function() {
-        $scope.locationRetrievePhoto = [];
-
-        var lat = $scope.lat = 40.419994;
-        var lng = $scope.lng = 15.005522;
-
-        searchService.retrievePhoto(lat, lng)
-            .then(function success(result) {
-                var photos = result.data;
-                for (var i = 0; i < photos.length; i++) {
-                    photos[i].location.latitude = parseFloat(photos[i].location.latitude);
-                    photos[i].location.latitude = photos[i].location.latitude + (Math.random() / 1000);
-                    photos[i].location.longitude = parseFloat(photos[i].location.longitude);
-                    photos[i].location.longitude = photos[i].location.longitude + (Math.random() / 1000);
-                    $scope.locationRetrievePhoto.push(photos[i]);
-                }
-                $log.info('$scope.locationRetrievePhoto', $scope.locationRetrievePhoto);
-            }, function error(error) {
-                $log.info('showRetrievePhotoError', error);
-            });
-    };*/
 });
