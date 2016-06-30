@@ -13,30 +13,30 @@ router.post('/download-show-photos', function(req, res) {
     var lng = req.body.lng;
     var page = req.body.pg;
     var distance = req.body.dist;
+    var accessToken = req.body.access_token;
 
     var photoInstagram = [];
 
     // 1.
     // funzione che interroga instagram a cui vengono passate delle coordinate
     // per farsi tornare le foto in un range di 5 km
-    var photosFromInsta = function(lat, lng) {
+    var photosFromInsta = function(lat, lng, distance, at) {
         return new Promise(function(resolve, reject) {
             var params = {
-                client_id: config.client_id_oldAPI
+                client_id: config.client_id_newAPI
             };
             var distance = 5000;
-            var url = 'https://api.instagram.com/v1/media/search?lat=' + lat + '&lng=' + lng + '&distance=' + distance + '?client_id=' + params.client_id;
-
+            var url = 'https://api.instagram.com/v1/media/search?lat=' + lat + '&lng=' + lng + '&distance=' + distance + '&access_token=' + at;
+            console.log(url);
             request.get({
                 url: url,
-                qs: params,
                 json: true
             }, function(error, response, body) {
                 if (!error && response.statusCode == 200) {
                     console.log("Le foto sono state scaricate");
                     resolve(body.data);
                 } else {
-                    console.log('Instagram non risponde');
+                    console.log('Instagram non risponde', error);
                     reject(error);
                 }
             });
@@ -159,9 +159,8 @@ router.post('/download-show-photos', function(req, res) {
     // 4.
     // funzione che prende come valori delle coordinate
     // e interroga il db per farsi tornare tutte le foto in un range di 5 km
-    var photosFromDb = function(lat, lng) {
+    var photosFromDb = function(lat, lng, page, distance) {
         return new Promise(function(resolve, reject) {
-
             var coords = [lat, lng];
             var p = page * 300;
             var d = distance * 1000;
@@ -201,11 +200,12 @@ router.post('/download-show-photos', function(req, res) {
 
     Promise
         .all([
-            photosFromInsta(req.body.lat, req.body.lng), 
+            photosFromInsta(lat, lng, distance, accessToken),
             // photosFromInsta(req.body.lat, req.body.lng), 
             // photosFromInsta(req.body.lat, req.body.lng), 
             // photosFromInsta(req.body.lat, req.body.lng),
-            db.openConn()])
+            db.openConn()
+        ])
         .then(function(value) {
             console.log('Inizio a salvare le foto nel db...');
             var photos0 = value[0];
@@ -220,7 +220,7 @@ router.post('/download-show-photos', function(req, res) {
             console.log('Mi dispiace ci sta qualche problema!');
         }).then(function(results) {
             console.log('Ora richiamo le foto dal db', results);
-            return photosFromDb(req.body.lat, req.body.lng);
+            return photosFromDb(lat, lng, page, distance);
         }).then(function(results1) {
             //var allPhoto = results1.concat(photoInstagram);
             for (var i = 0; i < results1.length; i++) {
