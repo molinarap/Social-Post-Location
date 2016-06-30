@@ -139,7 +139,7 @@ var setPopularityPhoto = function(popularity) {
                     console.log('existingPopularity');
                     if (p != existingPopularity.popularity) {
                         console.log('existingPopularity -----------------> ' + photoId);
-                        PopularityPhoto.update({ id: photo_id }, { $set: { 'popularity': p } },
+                        PopularityPhoto.update({ id: photoId }, { $set: { 'popularity': p } },
                             function(err, user) {
                                 if (err) {
                                     reject("existingPopularity err", err);
