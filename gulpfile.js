@@ -17,7 +17,10 @@ gulp.task('scripts', function() {
 // restart server if app.js changed 
 gulp.task('server:restart', function() {
     gulp.watch(['./app.js'], server.restart);
+    gulp.watch(['./app/**/*'], server.restart);
+    gulp.watch(['./routes/*'], server.restart);
 });
+
 
 //gulp.task('default', ['server:start', 'server:restart', 'scripts']);
 gulp.task('default', ['server:start', 'server:restart']);
