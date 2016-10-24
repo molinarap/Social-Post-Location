@@ -1,6 +1,7 @@
 var request = require('request');
 var TagCount = require('../models/tag_count');
 var Photo = require('../models/photo');
+var Promise = require('bluebird');
 
 var config = require('../config');
 
@@ -12,6 +13,12 @@ var count;
 
 var start1, end2, start2, end2;
 
+// conto le foto nel db
+// prendo i tag di ogni foto
+// ogni tag ha le foto in cui è contenuto nel sistema
+// ogni tag ha la popolarita presa da instagram
+// ogni tag ha un set di 20 tag-suggeti abbianti con la loro popolarità
+
 var contains = function(objId, list) {
     var i;
     for (i = 0; i < list.length; i++) {
@@ -22,22 +29,24 @@ var contains = function(objId, list) {
     return false;
 };
 
-var countPhotos = function(argument) {
+var countPhotos = function() {
     return new Promise(function(resolve, reject) {
         Photo.count({}, function(err, c) {
             if (err) {
                 reject(err);
             } else {
-                resolve(c);
+                var allPhoto = [];
+                allPhoto.length = c;
+                resolve(allPhoto);
             }
         });
     });
 };
 
-var getPhotos = function() {
+var getPhotos = function(c) {
     return new Promise(function(resolve, reject) {
-        console.log("getPhotos " + count);
-        var query = Photo.find({}).skip(count).limit(1);
+        //console.log("getPhotos " + count);
+        var query = Photo.find({}).skip(c).limit(1);
         query.exec(function(err, result) {
             if (err) {
                 reject(err);
@@ -105,52 +114,59 @@ var getTags = function(photo) {
     });
 };
 
-var all = function() {
-    console.log("all " + count);
-    if (count !== 0) {
-        count = count - 1;
-        getPhotos()
-            .then(
-                function(result) {
-                    console.log('photo ID', result[0].id);
-                    return getTags(result[0]);
-                },
-                function(error) {
-                    console.log(error);
-                })
-            .then(
-                function(result1) {
-                    all();
-                },
-                function(error) {
-                    console.log(error);
-                    db.closeConn();
-                });
-    } else {
-        console.log('Tutte le foto sono state elaborate');
-        db.closeConn();
-    }
-};
-
 db.openConn()
-    .then(function() {
-        return countPhotos();
-    })
-    .then(
-        function(count_photo) {
-            count = count_photo;
+    .then(countPhotos)
+    .map(r => getPhotos(r))
+    .then(function(r) {
+        console.log(r.length);
+    });
 
-            // start1 = 0;
-            // start2 = count_photo / 2;
+// var all = function() {
+//     console.log("all " + count);
+//     if (count !== 0) {
+//         count = count - 1;
+//         getPhotos()
+//             .then(
+//                 function(result) {
+//                     //console.log('photo ID', result[0].id);
+//                     return getTags(result[0]);
+//                 },
+//                 function(error) {
+//                     console.log(error);
+//                 })
+//             .then(
+//                 function(result1) {
+//                     all();
+//                 },
+//                 function(error) {
+//                     console.log(error);
+//                     db.closeConn();
+//                 });
+//     } else {
+//         console.log('Tutte le foto sono state elaborate');
+//         db.closeConn();
+//     }
+// };
 
-            // end1 = count_photo / 2 - 1;
-            // end2 = count_photo;
+// db.openConn()
+//     .then(function() {
+//         return countPhotos();
+//     })
+//     .then(
+//         function(count_photo) {
+//             count = count_photo;
 
-            console.log(count_photo);
-            // far partie più funzioni in parallelo
-            // riduce i tempi di creazione dei tag
-            Promise.all([all()]);
-        },
-        function(error) {
-            console.log(error);
-        });
+//             // start1 = 0;
+//             // start2 = count_photo / 2;
+
+//             // end1 = count_photo / 2 - 1;
+//             // end2 = count_photo;
+
+//             console.log(count_photo);
+//             // far partie più funzioni in parallelo
+//             // riduce i tempi di creazione dei tag
+//             Promise.all([all()]);
+//         },
+//         function(error) {
+//             console.log(error);
+//         });

@@ -4,9 +4,9 @@
         <span style="font-size: 16px;">Show Map</span>
     </md-tab-label> -->
     <ng-map zoom="14" center="current-location" geo-fallback-center="[{{coords.lat}},{{coords.lng}}]" style="height: 91%; display: block; position: fixed; overflow-y: scroll; top: 80px; right: 0; bottom: 0; left: 0;">
-        <shape name="circle" stroke-color="#FF0000" stroke-opacity="0.8" stroke-weight="2" fill-color="#FF0000" fill-opacity="0.35" center="[{{coords.lat}}, {{coords.lng}}]" radius="{{getRadius(1000)}}">
+        <shape name="circle" stroke-color="#FF0000" stroke-opacity="0.8" stroke-weight="2" fill-color="#FF0000" fill-opacity="0.35" center="[{{coords.lat}}, {{coords.lng}}]" radius="{{getRadius(5000)}}">
         </shape>
-        <marker id='{{l.id}}' ng-repeat="l in locationPhotos" position="[{{l.location.latitude}}, {{l.location.longitude}}]" on-click="showDetail(l)" icon="/static/images/sploc_maker.png" width="10">
+        <marker id='{{l.id}}' ng-repeat="l in locationPhotos" position="[{{l.location.latitude}}, {{l.location.longitude}}]" on-click="showDetail(l)" optimized="true" icon="{url:'/static/images/sploc_maker.png'}">
         </marker>
         <info-window id="photo-info">
             <div ng-non-bindable>

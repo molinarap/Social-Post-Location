@@ -55,7 +55,7 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap,
     };
 
     $scope.loader = false;
-    $scope.distance = "5";
+    $scope.distance = "1";
 
 
     // init ng-maps
@@ -69,25 +69,29 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap,
         console.log(result);
     });
 
-    var retriveInfoPlace = function(infoMaps) {
+    var retriveInfoPlace = function(infoMaps, more) {
         return new Promise((resolve, reject) => {
-            resolve(infoMaps.getPlace());
+            console.log(infoMaps);
+            if (more) {
+                resolve(false);
+            } else {
+                resolve(infoMaps.getPlace());
+            }
         });
     };
 
-    var centerMap = function(place, more) {
+    var centerMap = function(place) {
         return new Promise((resolve, reject) => {
             $scope.place = place;
-            $scope.page = 0;
-            $scope.coords = {
-                lat: place.geometry.location.lat(),
-                lng: place.geometry.location.lng()
-            };
-
-            if (more) {
+            if (place === false) {
                 $scope.coords.lat = $scope.coords.lat + (Math.random() / 100);
                 $scope.coords.lng = $scope.coords.lng + (Math.random() / 100);
             } else {
+                $scope.page = -1;
+                $scope.coords = {
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng()
+                };
                 console.log('$scope.coords', $scope.coords);
                 $scope.locationPhotos = [];
                 $scope.map.setCenter($scope.coords);
@@ -100,13 +104,13 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap,
     var downloadPhoto = function(coords) {
         var lat = coords.lat;
         var lng = coords.lng;
-        var pg = $scope.page;
+        var pg = $scope.page = $scope.page + 1;
         var d = parseInt($scope.distance);
         var at = localUser.accessToken;
 
         searchService.searchPhoto(lat, lng, pg, d, at)
             .then(function success(result) {
-                pg = $scope.page = $scope.page + 1;
+                console.log(pg);
                 var photos = result.data;
                 for (var i = 0; i < photos.length; i++) {
                     // var new_latitude = parseFloat(photos[i].location.latitude);
@@ -136,9 +140,9 @@ socialApp.controller('mapCtrl', function($rootScope, $scope, $http, $log, NgMap,
         $scope.loader = true;
         var infoMaps = this;
         var m = more;
-        retriveInfoPlace(infoMaps)
+        retriveInfoPlace(infoMaps, m)
             .then(function(place) {
-                return centerMap(place, more);
+                return centerMap(place);
             }).then(function(coords) {
                 downloadPhoto(coords);
             });

@@ -12,6 +12,11 @@ var User = new Schema({
     surname: String,
     picture: String,
     accessToken: String,
+    counts: {
+        media: Number,
+        followed_by: Number,
+        follows: Number
+    },
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 });

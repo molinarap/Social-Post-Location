@@ -86,6 +86,11 @@ router.post('/auth/instagram', function(req, res) {
                     name: body.user.name,
                     surname: body.user.surname,
                     picture: body.user.profile_picture,
+                    counts: {
+                        media: body.user.counts.media,
+                        followed_by: body.user.counts.followed_by,
+                        follows: body.user.counts.follows
+                    },
                     accessToken: body.access_token
                 });
 

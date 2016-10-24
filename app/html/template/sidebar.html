@@ -9,6 +9,7 @@
         <md-content class="md-no-momentum" style="margin-top:  30px; text-align: center;">
             <img ng-src="{{currentUser.picture}}" style="border-radius: 50%;">
             <p style="font-family: 'Roboto-Bold';">{{currentUser.username}}</p>
+            <a href=""><p style="font-family: 'Roboto-Bold';">Le mie foto</p></a>
             <div style="background: #E3E3E3; width: 70%; height: 1px; margin: 25px auto;"></div>
             <div layout="row">
                 <div flex>
@@ -34,15 +35,6 @@
     <div style="margin-top:  20px; text-align: center;">
         <md-content class="md-no-momentum">
             <p>Foto: {{locationPhotos.length}}</p>
-        </md-content>
-        <md-content class="md-no-momentum">
-            <md-radio-group ng-model="distance">
-                <md-radio-button value="1">1 km</md-radio-button>
-                <md-radio-button value="2">2 km </md-radio-button>
-                <md-radio-button value="3">3 km</md-radio-button>
-                <md-radio-button value="4">4 km</md-radio-button>
-                <md-radio-button value="5">5 km</md-radio-button>
-            </md-radio-group>
         </md-content>
         <md-content class="md-no-momentum">
             <md-button type="button" ng-click="pointPlace(true)" class="md-raised md-accent" style="margin: 26px 0;">More photos</md-button>
